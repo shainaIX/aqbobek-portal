@@ -13,6 +13,7 @@ import {
     ChevronLeft,
     ChevronRight,
     AlertTriangle,
+    MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -45,6 +46,12 @@ export default function TeacherSidebar() {
             icon: Users,
             label: "Классы",
             href: "/teacher/classes",
+        },
+        {
+            icon: MessageSquare,  // ← ДОБАВИТЬ
+            label: "Сообщения",   // ← ДОБАВИТЬ
+            href: "/teacher/messages",  // ← ДОБАВИТЬ
+            badge: 5,  // ← ДОБАВИТЬ (количество новых сообщений)
         },
         {
             icon: FileText,

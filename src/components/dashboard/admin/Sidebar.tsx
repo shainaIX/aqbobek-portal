@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -48,6 +49,12 @@ export default function AdminSidebar() {
       href: "/admin/users",
     },
     {
+      icon: MessageSquare,  // ← ДОБАВИТЬ
+      label: "Сообщения",   // ← ДОБАВИТЬ
+      href: "/admin/messages",  // ← ДОБАВИТЬ
+      badge: 8,  // ← ДОБАВИТЬ (количество новых сообщений)
+    },
+    {
       icon: Bell,
       label: "Уведомления",
       href: "/admin/notifications",
@@ -57,11 +64,6 @@ export default function AdminSidebar() {
       icon: BarChart3,
       label: "Аналитика",
       href: "/admin/analytics",
-    },
-    {
-      icon: Settings,
-      label: "Настройки",
-      href: "/admin/settings",
     },
   ];
 

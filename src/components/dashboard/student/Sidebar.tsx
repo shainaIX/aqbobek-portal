@@ -13,6 +13,7 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -51,6 +52,12 @@ export default function Sidebar() {
       label: "Достижения",
       href: "/student/achievements",
       badge: 3,
+    },
+    {
+      icon: MessageSquare,  // ← ДОБАВИТЬ
+      label: "Сообщения",   // ← ДОБАВИТЬ
+      href: "/student/messages",  // ← ДОБАВИТЬ
+      badge: 3,  // ← ДОБАВИТЬ (количество новых сообщений)
     },
     {
       icon: User,
