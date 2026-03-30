@@ -1,445 +1,475 @@
 "use client";
-
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Award, 
-  BookOpen, 
-  Calendar,
-  Bell,
-  Search,
-  Menu,
+import {
+  Phone,
+  Mail,
+  Zap,
+  BookOpen,
+  Users,
+  Award,
+  TrendingUp,
   Target,
-  Clock,
-  ChevronRight,
-  Star,
-  Zap
+  Calendar,
+  ChevronDown,
+  Play,
+  Star
 } from "lucide-react";
+import LandingHeader from "@/components/landing/LandingHeader";
+import LandingFooter from "@/components/landing/LandingFooter";
+import { useRouter } from "next/navigation";
 
-export default function DashboardPage() {
+export default function WelcomePage() {
+  const router = useRouter();
+
+  const features = [
+    {
+      icon: Zap,
+      title: "AI-Аналитика",
+      description: "Персональные рекомендации для каждого ученика на основе успеваемости",
+      color: "from-primary-400 to-primary-600",
+    },
+    {
+      icon: BookOpen,
+      title: "Цифровой Портфель",
+      description: "Все достижения, сертификаты и олимпиады в одном месте",
+      color: "from-secondary-400 to-secondary-600",
+    },
+    {
+      icon: Users,
+      title: "Единая Среда",
+      description: "Ученики, учителя и родители в одной цифровой экосистеме",
+      color: "from-tertiary-400 to-tertiary-600",
+    },
+    {
+      icon: Target,
+      title: "Геймификация",
+      description: "Ачивки, лидерборды и мотивация для лучших результатов",
+      color: "from-purple-400 to-purple-600",
+    },
+    {
+      icon: Calendar,
+      title: "Умное Расписание",
+      description: "Автоматическое построение без конфликтов и окон",
+      color: "from-pink-400 to-pink-600",
+    },
+    {
+      icon: TrendingUp,
+      title: "Раннее Предупреждение",
+      description: "AI обнаруживает риски падения успеваемости заранее",
+      color: "from-orange-400 to-orange-600",
+    },
+  ];
+
+  const stats = [
+    { value: "1200+", label: "Учеников" },
+    { value: "85", label: "Учителей" },
+    { value: "98%", label: "Поступление в ВУЗы" },
+    { value: "15+", label: "Лет опыта" },
+  ];
+
+  const galleryImages = [
+    { src: "/images/school-1.jpg", alt: "Школьный корпус", span: "col-span-2 row-span-2" },
+    { src: "/images/school-2.jpg", alt: "Классная комната", span: "col-span-1 row-span-1" },
+    { src: "/images/school-3.jpg", alt: "Лаборатория", span: "col-span-1 row-span-1" },
+    { src: "/images/school-4.jpg", alt: "Спортзал", span: "col-span-1 row-span-1" },
+    { src: "/images/school-5.jpg", alt: "Библиотека", span: "col-span-1 row-span-1" },
+  ];
+
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <button className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg">
-                <Menu className="w-5 h-5" />
-              </button>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="font-headline text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">
-                  Aqbobek Lyceum
-                </h1>
-              </div>
-            </div>
+      <div className="min-h-screen bg-neutral-50">
+        <LandingHeader />
 
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center bg-neutral-100 rounded-lg px-3 py-2">
-                <Search className="w-4 h-4 text-neutral-400 mr-2" />
-                <input
-                  type="text"
-                  placeholder="Поиск..."
-                  className="bg-transparent border-none outline-none text-sm w-64"
-                />
-              </div>
-              
-              <button className="relative p-2 hover:bg-neutral-100 rounded-lg">
-                <Bell className="w-5 h-5 text-neutral-700" />
-                <span className="absolute top-1 right-1 w-4 h-4 bg-primary-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                  3
+        {/* Hero Section */}
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+          {/* Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-tertiary-50" />
+
+          {/* Animated Background Shapes */}
+          <div className="absolute inset-0 overflow-hidden">
+            <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 90, 0],
+                }}
+                transition={{ duration: 20, repeat: Infinity }}
+                className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-primary-100/30 to-transparent rounded-full blur-3xl"
+            />
+            <motion.div
+                animate={{
+                  scale: [1, 1.3, 1],
+                  rotate: [0, -90, 0],
+                }}
+                transition={{ duration: 25, repeat: Infinity }}
+                className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-tertiary-100/30 to-transparent rounded-full blur-3xl"
+            />
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="text-center space-y-8">
+              {/* Badge */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-md border border-neutral-200"
+              >
+                <Star className="w-4 h-4 text-secondary-500 fill-secondary-500" />
+                <span className="text-sm font-medium text-neutral-700">
+                Лучшая школа года 2025
+              </span>
+              </motion.div>
+
+              {/* Heading */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="space-y-4"
+              >
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-headline text-neutral-900 leading-tight">
+                  Образование
+                  <span className="block bg-gradient-to-r from-primary-500 via-secondary-500 to-tertiary-500 bg-clip-text text-transparent">
+                  нового поколения
                 </span>
-              </button>
+                </h1>
+                <p className="text-lg sm:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+                  Интеллектуальная платформа с AI-аналитикой, персональным подходом
+                  и цифровой экосистемой для учеников, учителей и родителей
+                </p>
+              </motion.div>
 
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-md">
-                АИ
-              </div>
+              {/* CTA Buttons */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              >
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push("/login")}
+                    className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-5 h-5" />
+                  Войти в портал
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto px-8 py-4 bg-white text-neutral-900 font-medium rounded-xl shadow-md hover:shadow-lg border border-neutral-200 transition-all flex items-center justify-center gap-2"
+                >
+                  <Play className="w-5 h-5" />
+                  Смотреть видео
+                </motion.button>
+              </motion.div>
+
+              {/* Stats */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 pt-12"
+              >
+                {stats.map((stat, index) => (
+                    <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1 }}
+                        className="text-center"
+                    >
+                      <p className="text-3xl sm:text-4xl font-bold font-headline text-primary-600">
+                        {stat.value}
+                      </p>
+                      <p className="text-sm text-neutral-600 mt-1">{stat.label}</p>
+                    </motion.div>
+                ))}
+              </motion.div>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h2 className="text-3xl font-bold font-headline text-neutral-900 mb-2">
-            Добро пожаловать, Алишер! 👋
-          </h2>
-          <p className="text-lg text-neutral-600">
-            Вот что происходит с вашей успеваемостью сегодня
-          </p>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            icon={TrendingUp}
-            title="Средний балл"
-            value="4.8"
-            trend="+0.3"
-            trendUp={true}
-            color="primary"
-          />
-          <StatCard
-            icon={Award}
-            title="Достижения"
-            value="12"
-            trend="+2"
-            trendUp={true}
-            color="secondary"
-          />
-          <StatCard
-            icon={BookOpen}
-            title="Предметов"
-            value="14"
-            trend="0"
-            trendUp={true}
-            color="tertiary"
-          />
-          <StatCard
-            icon={Calendar}
-            title="Уроков сегодня"
-            value="6"
-            trend="-1"
-            trendUp={false}
-            color="primary"
-          />
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* AI Insights */}
+          {/* Scroll Indicator */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2 bg-white rounded-xl border border-neutral-200 shadow-sm p-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="absolute bottom-8 left-1/2 -translate-x-1/2"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
-                  <Star className="w-4 h-4 text-white" />
+            <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="flex flex-col items-center gap-2 text-neutral-400"
+            >
+              <span className="text-xs font-medium">Листайте вниз</span>
+              <ChevronDown className="w-5 h-5" />
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="py-20 sm:py-32 bg-white">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-neutral-900 mb-4">
+                Преимущества платформы
+              </h2>
+              <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                Всё необходимое для современного образования в одной системе
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                    <motion.div
+                        key={feature.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ y: -8 }}
+                        className="group p-8 bg-neutral-50 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-xl transition-all"
+                    >
+                      <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                        <Icon className="w-7 h-7 text-white" />
+                      </div>
+                      <h3 className="text-xl font-semibold font-headline text-neutral-900 mb-3">
+                        {feature.title}
+                      </h3>
+                      <p className="text-neutral-600 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* About Section with Photo Placeholder */}
+        <section id="about" className="py-20 sm:py-32 bg-neutral-50">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Photo Grid */}
+              <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="grid grid-cols-3 gap-4"
+              >
+                {/* Main Photo Placeholder */}
+                <div className="col-span-2 row-span-2 aspect-square bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center shadow-xl">
+                  <div className="text-center text-white p-8">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-80" />
+                    <p className="text-lg font-medium opacity-90">Фото школы</p>
+                    <p className="text-sm opacity-75">800x800px</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold font-headline text-neutral-900">
-                  AI-Рекомендации
-                </h3>
-              </div>
-              <button className="px-4 py-2 text-sm font-medium text-primary-600 border-2 border-primary-500 rounded-lg hover:bg-primary-50 transition-colors">
-                Все рекомендации
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <AIInsightCard
-                subject="Физика"
-                probability={80}
-                message="Вероятность успешной сдачи СОЧ по теме «Квантовая механика»"
-                recommendations={[
-                  "Посмотрите видеолекцию №12",
-                  "Решите 5 практических задач",
-                  "Повторите формулы из главы 3"
-                ]}
-              />
-              
-              <AIInsightCard
-                subject="Алгебра"
-                probability={95}
-                message="Отличная подготовка к контрольной работе"
-                recommendations={[
-                  "Продолжайте в том же духе!",
-                  "Попробуйте задачи повышенной сложности"
-                ]}
-              />
+                {/* Small Photos Placeholders */}
+                <div className="aspect-square bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="text-center text-white p-4">
+                    <Users className="w-8 h-8 mx-auto mb-2 opacity-80" />
+                    <p className="text-xs font-medium opacity-90">Ученики</p>
+                  </div>
+                </div>
+                <div className="aspect-square bg-gradient-to-br from-tertiary-400 to-tertiary-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="text-center text-white p-4">
+                    <Award className="w-8 h-8 mx-auto mb-2 opacity-80" />
+                    <p className="text-xs font-medium opacity-90">Достижения</p>
+                  </div>
+                </div>
+              </motion.div>
 
-              <AIInsightCard
-                subject="История"
-                probability={65}
-                message="Требуется повторение материала по теме «Вторая мировая война»"
-                recommendations={[
-                  "Прочитайте конспект за 15 марта",
-                  "Посмотрите документальный фильм",
-                  "Составьте хронологию событий"
-                ]}
-              />
+              {/* Content */}
+              <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-6"
+              >
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-neutral-900">
+                  О нашей школе
+                </h2>
+                <p className="text-lg text-neutral-600 leading-relaxed">
+                  Aqbobek Lyceum — это современное образовательное учреждение,
+                  где традиции качественного образования сочетаются с инновационными
+                  технологиями обучения.
+                </p>
+                <p className="text-lg text-neutral-600 leading-relaxed">
+                  Мы используем передовые AI-технологии для персонализации обучения,
+                  отслеживания прогресса каждого ученика и создания оптимальных
+                  образовательных траекторий.
+                </p>
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-primary-100 rounded-lg">
+                    <Check className="w-5 h-5 text-primary-600" />
+                    <span className="text-sm font-medium text-primary-700">Аккредитовано</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-secondary-100 rounded-lg">
+                    <Check className="w-5 h-5 text-secondary-700" />
+                    <span className="text-sm font-medium text-secondary-700">Опытные учителя</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-tertiary-100 rounded-lg">
+                    <Check className="w-5 h-5 text-tertiary-700" />
+                    <span className="text-sm font-medium text-tertiary-700">Современное оборудование</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
-
-          {/* Schedule */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl border border-neutral-200 shadow-sm p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary-600" />
-                <h3 className="text-xl font-semibold font-headline text-neutral-900">
-                  Расписание
-                </h3>
-              </div>
-              <button className="text-sm text-neutral-600 hover:text-neutral-900">
-                Сегодня
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              <ScheduleItem
-                time="08:30 - 09:15"
-                subject="Алгебра"
-                room="Кабинет 305"
-                teacher="Иванова А.П."
-                completed
-              />
-              <ScheduleItem
-                time="09:25 - 10:10"
-                subject="Физика"
-                room="Лаборатория 201"
-                teacher="Петров С.М."
-                current
-              />
-              <ScheduleItem
-                time="10:30 - 11:15"
-                subject="Литература"
-                room="Кабинет 412"
-                teacher="Сидорова Е.В."
-              />
-              <ScheduleItem
-                time="11:35 - 12:20"
-                subject="История"
-                room="Кабинет 308"
-                teacher="Алиев Р.К."
-              />
-              <ScheduleItem
-                time="12:40 - 13:25"
-                subject="Английский"
-                room="Кабинет 215"
-                teacher="Johnson M."
-              />
-            </div>
-
-            <button className="w-full mt-6 py-2.5 text-sm font-medium text-primary-600 border-2 border-primary-500 rounded-lg hover:bg-primary-50 transition-colors flex items-center justify-center gap-2">
-              Полное расписание
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </motion.div>
-        </div>
-
-        {/* Achievements Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg p-6 text-white"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">Ваши цели на неделю</h3>
-                <p className="text-primary-100">Прогресс: 3 из 5 выполнено</p>
-              </div>
-            </div>
-            <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors text-sm font-medium">
-              Подробнее
-            </button>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <GoalItem 
-              title="Сдать СОЧ по физике" 
-              progress={100} 
-              completed 
-            />
-            <GoalItem 
-              title="Прочитать 2 главы литературы" 
-              progress={50} 
-            />
-            <GoalItem 
-              title="Решить 20 задач по алгебре" 
-              progress={75} 
-            />
+        </section>
+
+        {/* Gallery Section */}
+        <section id="gallery" className="py-20 sm:py-32 bg-white">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-neutral-900 mb-4">
+                Галерея
+              </h2>
+              <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                Жизнь нашей школы в фотографиях
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-3 gap-4 auto-rows-[200px]">
+              {galleryImages.map((image, index) => (
+                  <motion.div
+                      key={image.alt}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                      className={`${image.span} relative overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-200 to-neutral-300 flex items-center justify-center`}
+                  >
+                    {/* Photo Placeholder */}
+                    <div className="text-center text-neutral-500 p-8">
+                      <div className="w-16 h-16 bg-neutral-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span className="text-2xl">📷</span>
+                      </div>
+                      <p className="text-sm font-medium">{image.alt}</p>
+                      <p className="text-xs opacity-75 mt-1">Загрузите фото</p>
+                    </div>
+                  </motion.div>
+              ))}
+            </div>
           </div>
-        </motion.div>
-      </main>
-    </div>
+        </section>
+
+        {/* CTA Section */}
+        <section id="admissions" className="py-20 sm:py-32 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center space-y-8"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-white">
+                Готовы начать обучение?
+              </h2>
+              <p className="text-lg text-primary-100 max-w-2xl mx-auto">
+                Присоединяйтесь к нашей цифровой экосистеме уже сегодня
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push("/login")}
+                    className="w-full sm:w-auto px-8 py-4 bg-white text-primary-600 font-medium rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  Войти в портал
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto px-8 py-4 bg-primary-600 text-white font-medium rounded-xl border-2 border-white/30 hover:bg-primary-700 transition-all"
+                >
+                  Связаться с нами
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="py-20 sm:py-32 bg-neutral-50">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-headline text-neutral-900 mb-4">
+                Контакты
+              </h2>
+              <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                Свяжитесь с нами любым удобным способом
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { icon: MapPin, title: "Адрес", value: "г. Алматы, ул. Абая 150" },
+                { icon: Phone, title: "Телефон", value: "+7 (727) 123-45-67" },
+                { icon: Mail, title: "Email", value: "info@aqbobek.kz" },
+              ].map((item, index) => {
+                const Icon = item.icon;
+                return (
+                    <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-white p-8 rounded-2xl border border-neutral-200 text-center hover:shadow-lg transition-all"
+                    >
+                      <div className="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <Icon className="w-7 h-7 text-primary-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold font-headline text-neutral-900 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-neutral-600">{item.value}</p>
+                    </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <LandingFooter />
+      </div>
   );
 }
 
-// Компоненты
-
-function StatCard({ 
-  icon: Icon, 
-  title, 
-  value, 
-  trend, 
-  trendUp, 
-  color 
-}: { 
-  icon: any; 
-  title: string; 
-  value: string; 
-  trend: string; 
-  trendUp: boolean;
-  color: 'primary' | 'secondary' | 'tertiary';
-}) {
-  const colorClasses = {
-    primary: 'bg-primary-100 text-primary-600',
-    secondary: 'bg-secondary-100 text-secondary-700',
-    tertiary: 'bg-tertiary-100 text-tertiary-700',
-  };
-
+// Helper Component
+function Check({ className }: { className?: string }) {
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      className="bg-white rounded-xl border border-neutral-200 shadow-sm p-6 hover:shadow-lg transition-all"
-    >
-      <div className="flex items-start justify-between">
-        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
-        </div>
-        <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-          trendUp ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-        }`}>
-          {trend}
-        </span>
-      </div>
-      <div className="mt-4">
-        <p className="text-3xl font-bold font-headline text-neutral-900">{value}</p>
-        <p className="text-sm text-neutral-600 mt-1">{title}</p>
-      </div>
-    </motion.div>
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      </svg>
   );
 }
 
-function AIInsightCard({ 
-  subject, 
-  probability, 
-  message, 
-  recommendations 
-}: { 
-  subject: string;
-  probability: number;
-  message: string;
-  recommendations: string[];
-}) {
-  const getProbabilityColor = (prob: number) => {
-    if (prob >= 80) return 'bg-green-100 text-green-700 border-green-300';
-    if (prob >= 60) return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-    return 'bg-red-100 text-red-700 border-red-300';
-  };
-
+function MapPin({ className }: { className?: string }) {
   return (
-    <div className="border border-neutral-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold font-headline text-lg text-neutral-900">{subject}</h4>
-        <span className={`px-3 py-1 text-sm font-bold rounded-full border ${getProbabilityColor(probability)}`}>
-          {probability}%
-        </span>
-      </div>
-      <p className="text-neutral-600 text-sm mb-3">{message}</p>
-      <div className="space-y-2">
-        {recommendations.map((rec, idx) => (
-          <div key={idx} className="flex items-start gap-2 text-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2 flex-shrink-0" />
-            <span className="text-neutral-700">{rec}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ScheduleItem({ 
-  time, 
-  subject, 
-  room, 
-  teacher, 
-  completed, 
-  current 
-}: { 
-  time: string;
-  subject: string;
-  room: string;
-  teacher: string;
-  completed?: boolean;
-  current?: boolean;
-}) {
-  return (
-    <div className={`p-3 rounded-lg border transition-all ${
-      current 
-        ? 'border-primary-500 bg-primary-50 shadow-sm' 
-        : completed 
-          ? 'border-neutral-200 opacity-60 bg-neutral-50' 
-          : 'border-neutral-200 hover:border-primary-300 bg-white'
-    }`}>
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
-          {current && (
-            <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
-          )}
-          <span className={`text-sm font-medium ${
-            current ? 'text-primary-900' : 'text-neutral-900'
-          }`}>
-            {subject}
-          </span>
-        </div>
-        <span className="text-xs text-neutral-500 font-medium">{time}</span>
-      </div>
-      <div className="flex items-center gap-3 text-xs text-neutral-600 ml-4">
-        <span>{room}</span>
-        <span>•</span>
-        <span>{teacher}</span>
-      </div>
-      {current && (
-        <div className="mt-2 ml-4">
-          <span className="text-xs text-primary-600 font-semibold">Сейчас</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GoalItem({ 
-  title, 
-  progress, 
-  completed 
-}: { 
-  title: string;
-  progress: number;
-  completed?: boolean;
-}) {
-  return (
-    <div className={`p-4 rounded-lg ${
-      completed ? 'bg-white/30' : 'bg-white/20'
-    }`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">{title}</span>
-        {completed && (
-          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-            <svg className="w-3 h-3 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          </div>
-        )}
-      </div>
-      <div className="w-full bg-white/30 rounded-full h-2">
-        <div 
-          className="bg-white rounded-full h-2 transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <p className="text-xs mt-2 text-primary-100">{progress}%</p>
-    </div>
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
   );
 }
