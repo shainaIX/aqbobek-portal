@@ -1,0 +1,68 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#E8F8EF',
+          100: '#D1F0DF',
+          200: '#A3E1BF',
+          300: '#75D29F',
+          400: '#50C878',
+          500: '#3AA868',
+          600: '#2E8854',
+          700: '#236840',
+          800: '#17482C',
+          900: '#0C2818',
+        },
+        secondary: {
+          50: '#FAFFCC',
+          100: '#F5FF99',
+          200: '#EFFF66',
+          300: '#E9FF33',
+          400: '#DFFF00',
+          500: '#BFD100',
+          600: '#9FA300',
+          700: '#7F7500',
+          800: '#5F4D00',
+          900: '#3F2500',
+        },
+        tertiary: {
+          50: '#CCF5FF',
+          100: '#99EBFF',
+          200: '#66E1FF',
+          300: '#33E5FF',
+          400: '#00DCFE',
+          500: '#00B8D4',
+          600: '#0094AA',
+          700: '#007080',
+          800: '#004C55',
+          900: '#00282B',
+        },
+        neutral: {
+          50: '#FFFFFF',
+          100: '#F8F9FA',
+          200: '#E9ECEF',
+          300: '#DEE2E6',
+          400: '#CED4DA',
+          500: '#ADB5BD',
+          600: '#6C757D',
+          700: '#495057',
+          800: '#343A40',
+          900: '#212529',
+        },
+      },
+      fontFamily: {
+        headline: ['var(--font-space-grotesk)', 'sans-serif'],
+        body: ['var(--font-manrope)', 'sans-serif'],
+        label: ['var(--font-space-grotesk)', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+}
