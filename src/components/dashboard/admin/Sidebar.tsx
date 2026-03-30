@@ -4,15 +4,16 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
-  Users,
-  FileText,
   Calendar,
-  User,
+  Users,
+  Bell,
+  BarChart3,
   Settings,
   LogOut,
   Zap,
   ChevronLeft,
   ChevronRight,
+  Shield,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -24,7 +25,7 @@ interface NavItem {
   badge?: number;
 }
 
-export default function TeacherSidebar() {
+export default function AdminSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,28 +34,34 @@ export default function TeacherSidebar() {
     {
       icon: LayoutDashboard,
       label: "Обзор",
-      href: "/teacher",
-      badge: 3,
-    },
-    {
-      icon: Users,
-      label: "Классы",
-      href: "/teacher/classes",
-    },
-    {
-      icon: FileText,
-      label: "Отчёты",
-      href: "/teacher/reports",
+      href: "/admin",
     },
     {
       icon: Calendar,
       label: "Расписание",
-      href: "/teacher/schedule",
+      href: "/admin/schedule",
+      badge: 2,
     },
     {
-      icon: User,
-      label: "Профиль",
-      href: "/teacher/profile",
+      icon: Users,
+      label: "Пользователи",
+      href: "/admin/users",
+    },
+    {
+      icon: Bell,
+      label: "Уведомления",
+      href: "/admin/notifications",
+      badge: 5,
+    },
+    {
+      icon: BarChart3,
+      label: "Аналитика",
+      href: "/admin/analytics",
+    },
+    {
+      icon: Settings,
+      label: "Настройки",
+      href: "/admin/settings",
     },
   ];
 
@@ -73,7 +80,7 @@ export default function TeacherSidebar() {
         <div className="flex items-center justify-between h-16 px-4 border-b border-neutral-200">
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center">
                 <Zap className="w-4 h-4 text-white" />
               </div>
               <span className="font-headline text-sm font-bold text-neutral-900">
@@ -108,7 +115,7 @@ export default function TeacherSidebar() {
                 transition={{ delay: index * 0.05 }}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all relative ${
                   isActive
-                    ? "bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-md"
                     : "text-neutral-700 hover:bg-neutral-100"
                 } ${isCollapsed ? "justify-center" : ""}`}
               >
@@ -120,7 +127,7 @@ export default function TeacherSidebar() {
                   <>
                     <span className="text-sm font-medium flex-1">{item.label}</span>
                     {item.badge && (
-                      <span className="px-2 py-0.5 bg-secondary-100 text-secondary-800 text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
                         {item.badge}
                       </span>
                     )}
@@ -135,15 +142,15 @@ export default function TeacherSidebar() {
         {!isCollapsed && (
           <div className="p-4 border-t border-neutral-200">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-full flex items-center justify-center text-white font-bold">
-                {user?.avatar || "У"}
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-bold">
+                <Shield className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-neutral-900 truncate">
                   {user?.name}
                 </p>
                 <p className="text-xs text-neutral-500 truncate">
-                  Учитель
+                  Администратор
                 </p>
               </div>
             </div>
@@ -167,7 +174,7 @@ export default function TeacherSidebar() {
       {/* Mobile Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-50 safe-area-pb">
         <div className="grid grid-cols-5">
-          {navItems.map((item) => {
+          {navItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -176,13 +183,13 @@ export default function TeacherSidebar() {
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-3 relative ${
-                  isActive ? "text-secondary-600" : "text-neutral-500"
+                  isActive ? "text-purple-600" : "text-neutral-500"
                 }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="text-[10px] font-medium mt-1">{item.label}</span>
                 {item.badge && (
-                  <span className="absolute top-2 right-2 w-4 h-4 bg-secondary-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                     {item.badge}
                   </span>
                 )}
