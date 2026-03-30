@@ -1,42 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Calendar, Award, TrendingUp } from "lucide-react";
-import Header from "@/components/dashboard/student/Header";
 import WelcomeBanner from "@/components/dashboard/student/WelcomeBanner";
 import StatCard from "@/components/dashboard/student/StatCards";
-import ScheduleList from "@/components/dashboard/student/ScheduleList";
-import SubjectProgress from "@/components/dashboard/student/SubjectProgress";
 import AIRecommendations from "@/components/dashboard/student/AIRecommendations";
 
 export default function StudentDashboard() {
-  const router = useRouter();
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-neutral-600 font-medium">Загрузка...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // Mock данные
   const stats = {
     gpa: 4.8,
     classRank: 5,
@@ -47,93 +19,75 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <Header />
+    <div className="space-y-6">
+      {/* Welcome Banner */}
+      <WelcomeBanner stats={stats} />
 
-      {/* Main Content */}
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        
-        {/* Welcome Banner */}
-        <div className="mb-6 sm:mb-8">
-          <WelcomeBanner stats={stats} />
-        </div>
+      {/* AI Recommendations */}
+      <AIRecommendations />
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <StatCard
-            icon={TrendingUp}
-            title="Средний балл"
-            value={stats.gpa.toFixed(1)}
-            trend="+0.3"
-            trendDirection="up"
-            color="primary"
-            delay={0.1}
-          />
-          <StatCard
-            icon={Award}
-            title="Позиция в классе"
-            value={`#${stats.classRank}`}
-            trend="+2"
-            trendDirection="up"
-            color="secondary"
-            delay={0.2}
-          />
-          <StatCard
-            icon={BookOpen}
-            title="Предметов"
-            value={stats.subjects}
-            color="tertiary"
-            delay={0.3}
-          />
-          <StatCard
-            icon={Calendar}
-            title="Уроков сегодня"
-            value={stats.lessonsToday}
-            trend="-1"
-            trendDirection="down"
-            color="primary"
-            delay={0.4}
-          />
-        </div>
-
-        {/* Main Grid - AI + Schedule */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* AI Recommendations (2/3 width on desktop) */}
-          <div className="lg:col-span-2">
-            <AIRecommendations />
-          </div>
-          
-          {/* Schedule (1/3 width on desktop) */}
-          <div className="lg:col-span-1">
-            <ScheduleList />
-          </div>
-        </div>
-
-        {/* Subject Progress (full width) */}
-        <div className="mb-6">
-          <SubjectProgress />
-        </div>
-
-        {/* Placeholder for Achievements & Leaderboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center min-h-[300px] flex items-center justify-center">
-            <div>
-              <p className="text-4xl mb-4">🏆</p>
-              <p className="text-neutral-600 font-medium">Достижения</p>
-              <p className="text-sm text-neutral-500 mt-2">Скоро будет...</p>
+      {/* Quick Links to Other Pages */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a
+          href="/student/schedule"
+          className="p-6 bg-white rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-tertiary-400 to-tertiary-600 rounded-lg flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-white" />
             </div>
+            <h3 className="font-headline text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+              Расписание
+            </h3>
           </div>
-          <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center min-h-[300px] flex items-center justify-center">
-            <div>
-              <p className="text-4xl mb-4">🥇</p>
-              <p className="text-neutral-600 font-medium">Лидерборд</p>
-              <p className="text-sm text-neutral-500 mt-2">Скоро будет...</p>
-            </div>
-          </div>
-        </div>
+          <p className="text-sm text-neutral-600">
+            Полное расписание на неделю с заменами
+          </p>
+          <p className="text-xs text-primary-600 mt-3 font-medium">
+            Открыть →
+          </p>
+        </a>
 
-      </main>
+        <a
+          href="/student/grades"
+          className="p-6 bg-white rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="font-headline text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+              Оценки
+            </h3>
+          </div>
+          <p className="text-sm text-neutral-600">
+            Детальная успеваемость по предметам
+          </p>
+          <p className="text-xs text-primary-600 mt-3 font-medium">
+            Открыть →
+          </p>
+        </a>
+
+        <a
+          href="/student/achievements"
+          className="p-6 bg-white rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-lg flex items-center justify-center">
+              <Award className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="font-headline text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+              Достижения
+            </h3>
+          </div>
+          <p className="text-sm text-neutral-600">
+            Ваши ачивки и награды
+          </p>
+          <p className="text-xs text-primary-600 mt-3 font-medium">
+            Открыть →
+          </p>
+        </a>
+      </div>
     </div>
   );
 }
