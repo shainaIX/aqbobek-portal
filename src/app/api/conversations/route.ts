@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { adminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 // GET /api/conversations — список диалогов текущего пользователя
@@ -28,7 +29,7 @@ export async function GET() {
     const conversationIds = participations.map(p => p.conversation_id)
 
     // Для каждого диалога получаем собеседника и последнее сообщение
-    const { data: conversations, error: convError } = await supabase
+    const { data: conversations, error: convError } = await adminClient
         .from('conversations')
         .select(`
       id,
@@ -56,14 +57,14 @@ export async function GET() {
             if (!partnerParticipant) return null
 
             // Получаем профиль собеседника
-            const { data: partner } = await supabase
+            const { data: partner } = await adminClient
                 .from('profiles') // ← таблица профилей (см. ниже)
                 .select('id, name, role, avatar_url')
                 .eq('id', partnerParticipant.user_id)
                 .single()
 
             // Получаем последнее сообщение
-            const { data: lastMsg } = await supabase
+            const { data: lastMsg } = await adminClient
                 .from('messages')
                 .select('content, created_at, sender_id')
                 .eq('conversation_id', conv.id)
@@ -77,7 +78,7 @@ export async function GET() {
             )
             const lastReadAt = myParticipation?.last_read_at ?? '1970-01-01'
 
-            const { count: unreadCount } = await supabase
+            const { count: unreadCount } = await adminClient
                 .from('messages')
                 .select('*', { count: 'exact', head: true })
                 .eq('conversation_id', conv.id)
@@ -129,12 +130,12 @@ export async function POST(req: Request) {
     }
 
     // Ищем существующий диалог между этими двумя
-    const { data: myConvs } = await supabase
+    const { data: myConvs } = await adminClient
         .from('conversation_participants')
         .select('conversation_id')
         .eq('user_id', user.id)
 
-    const { data: theirConvs } = await supabase
+    const { data: theirConvs } = await adminClient
         .from('conversation_participants')
         .select('conversation_id')
         .eq('user_id', recipientId)
@@ -148,18 +149,23 @@ export async function POST(req: Request) {
     }
 
     // Создаём новый диалог
-    const { data: conv, error: convError } = await supabase
+    const { data: convRows, error: convError } = await adminClient
         .from('conversations')
         .insert({})
-        .select()
-        .single()
+        .select('id')
 
     if (convError) {
         return NextResponse.json({ error: convError.message }, { status: 500 })
     }
 
+    const conv = convRows?.[0]
+
+    if (!conv?.id) {
+        return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
+    }
+
     // Добавляем обоих участников
-    const { error: partError } = await supabase
+    const { error: partError } = await adminClient
         .from('conversation_participants')
         .insert([
             { conversation_id: conv.id, user_id: user.id },

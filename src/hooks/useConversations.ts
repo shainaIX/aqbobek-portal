@@ -4,32 +4,47 @@ import type { Conversation } from '@/types/messaging'
 
 export function useConversations() {
     const [conversations, setConversations] = useState<Conversation[]>([])
-    const [isLoading, setIsLoading]         = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
 
     const fetchConversations = useCallback(async () => {
-        const res  = await fetch('/api/conversations')
-        const data = await res.json()
+        try {
+            const res = await fetch('/api/conversations')
+            const data = await res.json()
 
-        if (Array.isArray(data)) {
-            setConversations(data)
+            if (res.ok && Array.isArray(data)) {
+                setConversations(data)
+            }
+        } finally {
+            setIsLoading(false)
         }
-
-        setIsLoading(false)
     }, [])
 
-    // Polling каждые 10 секунд — список диалогов меняется реже
     usePolling(fetchConversations, 10000)
 
-    // Найти или создать диалог с пользователем
-    const startConversation = useCallback(async (recipientId: string) => {
-        const res  = await fetch('/api/conversations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipientId }),
-        })
-        const data = await res.json()
-        return data.id as string // возвращаем conversation_id для редиректа
-    }, [])
+    const startConversation = useCallback(
+        async (recipientId: string) => {
+            const res = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipientId }),
+            })
 
-    return { conversations, isLoading, startConversation }
+            const data = await res.json()
+
+            if (!res.ok || typeof data?.id !== 'string') {
+                throw new Error(data?.error ?? 'Failed to start conversation')
+            }
+
+            await fetchConversations()
+            return data.id as string
+        },
+        [fetchConversations]
+    )
+
+    return {
+        conversations,
+        isLoading,
+        refreshConversations: fetchConversations,
+        startConversation,
+    }
 }

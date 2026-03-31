@@ -26,9 +26,17 @@ export interface Message {
     sender_id: string
     sender_name: string
     sender_role: string
+    sender_avatar?: string | null
     content: string
     created_at: string
-    _pending?: boolean // оптимистичное обновление
+    _pending?: boolean
+}
+
+export interface SearchUser {
+    id: string
+    name: string
+    role: 'teacher' | 'parent' | 'student' | 'admin'
+    avatar_url: string | null
 }
 
 export interface Notification {

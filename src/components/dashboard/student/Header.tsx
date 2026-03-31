@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -37,7 +38,7 @@ export default function Header() {
                 )}
               </button>
 
-              <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -48,7 +49,7 @@ export default function Header() {
                 <span className="hidden sm:block font-headline text-xl font-bold text-neutral-900">
                   Aqbobek Lyceum
                 </span>
-              </div>
+              </Link>
             </div>
 
             <div className="hidden lg:flex flex-1 max-w-md mx-8">
