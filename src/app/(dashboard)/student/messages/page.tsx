@@ -140,7 +140,7 @@ export default function StudentMessagesPage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setFilterType(tab.id as any)}
+            onClick={() => setFilterType(tab.id as "all" | "teachers" | "classmates")}
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
               filterType === tab.id
                 ? "border-primary-500 text-primary-600"

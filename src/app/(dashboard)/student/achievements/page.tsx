@@ -1,11 +1,12 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { Award, Trophy, Star, Target, BookOpen, Flame } from "lucide-react";
 
 interface Achievement {
   id: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   progress: number;

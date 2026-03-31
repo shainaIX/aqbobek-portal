@@ -354,7 +354,7 @@ export function calculateStudentRisk(params: {
     ];
 
     // Добавляем риски по предметам (находим самый проблемный)
-    const subjectRisks = Object.entries(params.subjectGrades).map(([subjectId, grades]) =>
+    const subjectRisks = Object.entries(params.subjectGrades).map(([, grades]) =>
         calculateSubjectRisk(grades)
     );
 
@@ -393,7 +393,7 @@ export function calculateStudentRisk(params: {
     }
 
     // Генерируем рекомендации
-    const recommendations = generateRecommendations(factors, params);
+    const recommendations = generateRecommendations(factors);
 
     return {
         studentId: params.studentId,
@@ -410,8 +410,7 @@ export function calculateStudentRisk(params: {
 
 // Генерация рекомендаций на основе факторов риска
 function generateRecommendations(
-    factors: RiskFactor[],
-    params: any
+    factors: RiskFactor[]
 ): string[] {
     const recommendations: string[] = [];
 

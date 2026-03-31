@@ -50,7 +50,7 @@ export async function GET() {
         (conversations ?? []).map(async (conv) => {
             // Находим участника который НЕ текущий пользователь
             const partnerParticipant = conv.conversation_participants.find(
-                (p: any) => p.user_id !== user.id
+                (p: { user_id: string }) => p.user_id !== user.id
             )
 
             if (!partnerParticipant) return null

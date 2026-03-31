@@ -11,7 +11,6 @@ import {
     Settings,
     LogOut,
     ChevronDown,
-    AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Send, Paperclip, Search, MessageSquare, Users, GraduationCap, User, Shield } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const conversations = [
   { id: 0, type: "teacher", name: "Иванова А.П.", role: "Учитель математики", avatar: "ИП", lastMessage: "Нужно обсудить расписание", time: "2 часа назад", unread: 2 },
@@ -24,7 +24,7 @@ export default function AdminMessagesPage() {
   const selected = conversations.find((c) => c.id === selectedId);
 
   const getConfig = (type: string) => {
-    const configs: any = {
+    const configs: Record<string, { bg: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
       teacher: { bg: "from-purple-400 to-purple-600", color: "text-purple-600", icon: GraduationCap },
       parent: { bg: "from-blue-400 to-blue-600", color: "text-blue-600", icon: Users },
       student: { bg: "from-green-400 to-green-600", color: "text-green-600", icon: User },
@@ -78,7 +78,7 @@ export default function AdminMessagesPage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setFilter(tab.id as any)}
+            onClick={() => setFilter(tab.id as typeof filter)}
             className={`px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
               filter === tab.id ? "border-purple-500 text-purple-600" : "border-transparent text-neutral-600 hover:text-neutral-900"
             }`}

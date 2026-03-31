@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export type UserRole = 'student' | 'teacher' | 'parent' | 'admin';
 
@@ -63,7 +63,7 @@ function getUserFromStorage(): User | null {
     if (savedUser) {
       return JSON.parse(savedUser);
     }
-  } catch (e) {
+  } catch {
     localStorage.removeItem('aqbobek_user');
   }
   return null;

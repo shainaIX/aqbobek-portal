@@ -1,22 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  AlertTriangle,
+  CheckCircle,
   Plus,
   Download,
   RefreshCw,
   Filter,
-  Search
 } from "lucide-react";
-import { useState } from "react";
 
 export default function AdminSchedulePage() {
-  const [selectedWeek, setSelectedWeek] = useState("current");
 
   const scheduleConflicts = [
     { id: 1, type: "room", message: "Кабинет 305 занят двумя классами", time: "Пн 08:30", classes: ["10\"А\"", "10\"Б\""] },

@@ -4,8 +4,9 @@ import { NextResponse } from 'next/server'
 // POST /api/conversations/:id/read — пометить диалог прочитанным
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const supabase = await createClient()
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -16,7 +17,7 @@ export async function POST(
     const { error } = await supabase
         .from('conversation_participants')
         .update({ last_read_at: new Date().toISOString() })
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .eq('user_id', user.id)
 
     if (error) {

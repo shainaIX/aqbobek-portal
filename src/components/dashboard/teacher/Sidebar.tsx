@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
     LayoutDashboard,
     Users,
-    BookOpen,
     FileText,
     Calendar,
     Settings,
@@ -16,10 +15,10 @@ import {
     MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface NavItem {
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     label: string;
     href: string;
     badge?: number;

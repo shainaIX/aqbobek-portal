@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Phone, MapPin, Calendar, Edit2 } from "lucide-react";
+import { Mail, Phone, MapPin, Calendar, Edit2 } from "lucide-react";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -49,7 +49,7 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold font-headline text-neutral-900">
                 {user?.name}
               </h2>
-              <p className="text-sm text-neutral-500">Ученик 10"А" класса</p>
+              <p className="text-sm text-neutral-500">Ученик 10&quot;А&quot; класса</p>
             </div>
           </div>
 

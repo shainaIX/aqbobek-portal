@@ -13,7 +13,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import NotificationBell from "@/components/dashboard/shared/NotificationBell";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -74,7 +73,6 @@ export default function Header() {
                 <Search className="w-5 h-5 text-neutral-700" />
               </button>
 
-              <NotificationBell />
 
               <div className="relative">
                 <motion.button

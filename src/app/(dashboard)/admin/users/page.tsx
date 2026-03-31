@@ -1,16 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Users, 
-  Search, 
-  Plus, 
-  Filter, 
-  Download, 
+import {
+  Users,
+  Search,
+  Plus,
+  Filter,
+  Download,
   MoreVertical,
-  UserCheck,
-  UserX,
-  Shield,
   GraduationCap,
   BookOpen
 } from "lucide-react";
@@ -172,7 +169,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
-              {(users as any)[activeTab].map((user: any, index: number) => (
+              {users[activeTab as keyof typeof users].map((user, index: number) => (
                 <motion.tr
                   key={user.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -190,20 +187,20 @@ export default function AdminUsersPage() {
                   </td>
                   {activeTab === "students" && (
                     <>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{user.class}</td>
+                      <td className="px-5 py-4 text-sm text-neutral-600">{(user as typeof users.students[0]).class}</td>
                       <td className="px-5 py-4">
-                        <span className="text-sm font-bold text-neutral-900">{user.gpa}</span>
+                        <span className="text-sm font-bold text-neutral-900">{(user as typeof users.students[0]).gpa}</span>
                       </td>
                     </>
                   )}
                   {activeTab === "teachers" && (
                     <>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{user.subject}</td>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{user.classes}</td>
+                      <td className="px-5 py-4 text-sm text-neutral-600">{(user as typeof users.teachers[0]).subject}</td>
+                      <td className="px-5 py-4 text-sm text-neutral-600">{(user as typeof users.teachers[0]).classes}</td>
                     </>
                   )}
                   {activeTab === "parents" && (
-                    <td className="px-5 py-4 text-sm text-neutral-600">{user.children}</td>
+                    <td className="px-5 py-4 text-sm text-neutral-600">{(user as typeof users.parents[0]).children}</td>
                   )}
                   <td className="px-5 py-4 text-sm text-neutral-600">{user.email}</td>
                   <td className="px-5 py-4">

@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
     calculateStudentRisk,
     StudentGrade,
-    AttendanceRecord,
 } from '@/lib/risk-analysis/riskCalculator';
 import { mockStudents, generateMockGrades, generateMockAttendance } from '@/lib/risk-analysis/mockData';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        const { searchParams } = new URL(request.url);
-        const classId = searchParams.get('classId');
-
         // В реальном проекте здесь будет запрос к базе данных
         // Сейчас используем mock данные
 

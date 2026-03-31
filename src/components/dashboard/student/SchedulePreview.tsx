@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, MapPin, User, CheckCircle, ChevronRight } from "lucide-react";
+import { Clock, MapPin, CheckCircle, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 const lessons = [

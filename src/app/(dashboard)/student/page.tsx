@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import { BookOpen, Calendar, Award, TrendingUp, MessageSquare } from "lucide-react";
+import type { ComponentType } from "react";
+import { BookOpen, Calendar, Award, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import WelcomeBanner from "@/components/dashboard/student/WelcomeBanner";
@@ -99,7 +99,7 @@ export default function StudentDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
       >
-        <SubjectProgress limit={6} />
+        <SubjectProgress />
       </motion.div>
     </div>
   );
@@ -115,7 +115,7 @@ function QuickAccessCard({
   delay,
 }: {
   href: string;
-  icon: any;
+  icon: ComponentType<{ className?: string }>;
   iconColor: string;
   title: string;
   description: string;

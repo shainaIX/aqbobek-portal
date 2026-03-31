@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { motion } from "framer-motion";
 import { 
   TrendingUp, 
@@ -102,11 +103,7 @@ export default function DashboardPage() {
             color="primary"
           />
         </div>
-        <div className="lg:col-span-2">
-            <AIRecommendations limit={2} />
-        </div>
 
-        <SubjectProgress limit={4} showLink={true} />
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* AI Insights */}
@@ -204,7 +201,7 @@ function StatCard({
   trendUp, 
   color 
 }: { 
-  icon: any; 
+  icon: ComponentType<{ className?: string }>; 
   title: string; 
   value: string; 
   trend: string; 

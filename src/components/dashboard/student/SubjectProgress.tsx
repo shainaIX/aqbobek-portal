@@ -2,74 +2,16 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus, BookOpen } from "lucide-react";
-
-interface Subject {
-  id: string;
-  name: string;
-  grade: number;
-  progress: number;
-  trend: 'up' | 'down' | 'stable';
-  color: string;
-}
+import { getSubjectSummaries } from "@/lib/ai-learning/database";
+import type { SubjectSummary } from "@/lib/ai-learning/types";
 
 interface SubjectProgressProps {
-  subjects?: Subject[];
+  subjects?: SubjectSummary[];
+  studentId?: string;
 }
 
-export default function SubjectProgress({ subjects }: SubjectProgressProps) {
-  // Mock данные если не переданы
-  const defaultSubjects: Subject[] = [
-    {
-      id: '1',
-      name: 'Алгебра',
-      grade: 5,
-      progress: 92,
-      trend: 'up',
-      color: 'bg-primary-500',
-    },
-    {
-      id: '2',
-      name: 'Физика',
-      grade: 4,
-      progress: 78,
-      trend: 'up',
-      color: 'bg-tertiary-500',
-    },
-    {
-      id: '3',
-      name: 'Литература',
-      grade: 5,
-      progress: 85,
-      trend: 'stable',
-      color: 'bg-secondary-500',
-    },
-    {
-      id: '4',
-      name: 'История',
-      grade: 4,
-      progress: 65,
-      trend: 'down',
-      color: 'bg-purple-500',
-    },
-    {
-      id: '5',
-      name: 'Английский язык',
-      grade: 5,
-      progress: 88,
-      trend: 'up',
-      color: 'bg-pink-500',
-    },
-    {
-      id: '6',
-      name: 'Химия',
-      grade: 3,
-      progress: 52,
-      trend: 'down',
-      color: 'bg-orange-500',
-    },
-  ];
-
-  const displaySubjects = subjects || defaultSubjects;
+export default function SubjectProgress({ subjects, studentId = "1" }: SubjectProgressProps) {
+  const displaySubjects = subjects ?? getSubjectSummaries(studentId);
 
   const getGradeColor = (grade: number) => {
     switch (grade) {

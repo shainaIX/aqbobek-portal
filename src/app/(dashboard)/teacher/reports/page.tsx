@@ -76,10 +76,10 @@ export default function TeacherReportsPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <select className="px-4 py-2 bg-white/20 text-white rounded-lg border border-white/30 text-sm focus:outline-none focus:border-white">
-                <option>10"А"</option>
-                <option>10"Б"</option>
-                <option>9"А"</option>
-                <option>11"А"</option>
+                <option>10&quot;А&quot;</option>
+                <option>10&quot;Б&quot;</option>
+                <option>9&quot;А&quot;</option>
+                <option>11&quot;А&quot;</option>
               </select>
               <select className="px-4 py-2 bg-white/20 text-white rounded-lg border border-white/30 text-sm focus:outline-none focus:border-white">
                 <option>Январь 2025</option>

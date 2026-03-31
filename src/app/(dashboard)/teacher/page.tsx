@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
     Calendar,
     Clock,
@@ -9,11 +9,8 @@ import {
     TrendingUp,
     TrendingDown,
     AlertTriangle,
-    Mail,
     FileText,
-    BookOpen,
     CheckCircle,
-    XCircle,
     ChevronRight,
     Plus,
     Bell,
@@ -66,58 +63,41 @@ interface UpcomingEvent {
 }
 
 export default function TeacherDashboard() {
-    const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState<string>('all');
 
     // Mock Data (потом API)
-    const [classes, setClasses] = useState<ClassOverview[]>([]);
-    const [todayLessons, setTodayLessons] = useState<TodayLesson[]>([]);
-    const [riskStudents, setRiskStudents] = useState<RiskStudent[]>([]);
-    const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
-    const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
+    const classes: ClassOverview[] = [
+        { classId: '10a', className: '10"А"', students: 25, avgGpa: 4.2, attendance: 94, trend: 'up' },
+        { classId: '10b', className: '10"Б"', students: 23, avgGpa: 3.9, attendance: 91, trend: 'down' },
+        { classId: '9a', className: '9"А"', students: 27, avgGpa: 4.0, attendance: 96, trend: 'stable' },
+        { classId: '11a', className: '11"А"', students: 21, avgGpa: 4.5, attendance: 98, trend: 'up' },
+    ];
 
-    useEffect(() => {
-        // Загрузка данных
-        loadDashboardData();
-    }, []);
+    const todayLessons: TodayLesson[] = [
+        { id: '1', subject: 'Алгебра', className: '10"А"', time: '08:30 - 09:15', room: '305', completed: true },
+        { id: '2', subject: 'Геометрия', className: '10"Б"', time: '09:25 - 10:10', room: '305', completed: false },
+        { id: '3', subject: 'Алгебра', className: '9"А"', time: '10:30 - 11:15', room: '305', completed: false },
+        { id: '4', subject: 'Факультатив', className: '11"А"', time: '11:35 - 12:20', room: '305', completed: false },
+    ];
 
-    const loadDashboardData = async () => {
-        // Mock данные
-        setClasses([
-            { classId: '10a', className: '10"А"', students: 25, avgGpa: 4.2, attendance: 94, trend: 'up' },
-            { classId: '10b', className: '10"Б"', students: 23, avgGpa: 3.9, attendance: 91, trend: 'down' },
-            { classId: '9a', className: '9"А"', students: 27, avgGpa: 4.0, attendance: 96, trend: 'stable' },
-            { classId: '11a', className: '11"А"', students: 21, avgGpa: 4.5, attendance: 98, trend: 'up' },
-        ]);
+    const riskStudents: RiskStudent[] = [
+        { studentId: '1', studentName: 'Сидоров Дмитрий', className: '10"А"', riskScore: 75, riskLevel: 'medium', reason: 'Падение оценок' },
+        { studentId: '2', studentName: 'Иванов Алексей', className: '10"Б"', riskScore: 85, riskLevel: 'high', reason: 'Пропуски + ДЗ' },
+        { studentId: '3', studentName: 'Ким Мария', className: '9"А"', riskScore: 65, riskLevel: 'medium', reason: 'Низкие тесты' },
+    ];
 
-        setTodayLessons([
-            { id: '1', subject: 'Алгебра', className: '10"А"', time: '08:30 - 09:15', room: '305', completed: true },
-            { id: '2', subject: 'Геометрия', className: '10"Б"', time: '09:25 - 10:10', room: '305', completed: false },
-            { id: '3', subject: 'Алгебра', className: '9"А"', time: '10:30 - 11:15', room: '305', completed: false },
-            { id: '4', subject: 'Факультатив', className: '11"А"', time: '11:35 - 12:20', room: '305', completed: false },
-        ]);
+    const recentActivity: RecentActivity[] = [
+        { id: '1', type: 'grade', description: 'Алишер И. получил 5 за контрольную', time: '10 мин назад', icon: '📊' },
+        { id: '2', type: 'attendance', description: 'Темуров А. отсутствовал на уроке', time: '1 час назад', icon: '📅' },
+        { id: '3', type: 'homework', description: '5 учеников не сдали ДЗ по алгебре', time: '2 часа назад', icon: '📝' },
+        { id: '4', type: 'message', description: 'Новое сообщение от родителя', time: '3 часа назад', icon: '💬' },
+    ];
 
-        setRiskStudents([
-            { studentId: '1', studentName: 'Сидоров Дмитрий', className: '10"А"', riskScore: 75, riskLevel: 'medium', reason: 'Падение оценок' },
-            { studentId: '2', studentName: 'Иванов Алексей', className: '10"Б"', riskScore: 85, riskLevel: 'high', reason: 'Пропуски + ДЗ' },
-            { studentId: '3', studentName: 'Ким Мария', className: '9"А"', riskScore: 65, riskLevel: 'medium', reason: 'Низкие тесты' },
-        ]);
-
-        setRecentActivity([
-            { id: '1', type: 'grade', description: 'Алишер И. получил 5 за контрольную', time: '10 мин назад', icon: '📊' },
-            { id: '2', type: 'attendance', description: 'Темуров А. отсутствовал на уроке', time: '1 час назад', icon: '📅' },
-            { id: '3', type: 'homework', description: '5 учеников не сдали ДЗ по алгебре', time: '2 часа назад', icon: '📝' },
-            { id: '4', type: 'message', description: 'Новое сообщение от родителя', time: '3 часа назад', icon: '💬' },
-        ]);
-
-        setUpcomingEvents([
-            { id: '1', title: 'Контрольная работа 10"А"', date: '28.01', type: 'test', classId: '10a' },
-            { id: '2', title: 'Родительское собрание', date: '30.01', type: 'meeting', classId: '10a' },
-            { id: '3', title: 'Олимпиада по математике', date: '05.02', type: 'event', classId: '11a' },
-        ]);
-
-        setLoading(false);
-    };
+    const upcomingEvents: UpcomingEvent[] = [
+        { id: '1', title: 'Контрольная работа 10"А"', date: '28.01', type: 'test', classId: '10a' },
+        { id: '2', title: 'Родительское собрание', date: '30.01', type: 'meeting', classId: '10a' },
+        { id: '3', title: 'Олимпиада по математике', date: '05.02', type: 'event', classId: '11a' },
+    ];
 
     const stats = {
         totalStudents: classes.reduce((acc, c) => acc + c.students, 0),
@@ -125,17 +105,6 @@ export default function TeacherDashboard() {
         avgAttendance: Math.round(classes.reduce((acc, c) => acc + c.attendance, 0) / classes.length),
         riskCount: riskStudents.length,
     };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-secondary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-neutral-600 font-medium">Загрузка дашборда...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-6">

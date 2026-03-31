@@ -1,16 +1,15 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Sparkles, 
-  Target, 
-  PlayCircle, 
-  BookOpen, 
-  CheckCircle2, 
+import { motion } from "framer-motion";
+import {
+  Sparkles,
+  Target,
+  PlayCircle,
+  BookOpen,
+  CheckCircle2,
   ArrowRight,
   AlertCircle,
   TrendingUp,
-  Clock
 } from "lucide-react";
 import Link from "next/link";
 

@@ -4,8 +4,9 @@ import { NextResponse } from 'next/server'
 // GET /api/conversations/:id/messages?cursor=<iso_date>
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const supabase = await createClient()
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -17,7 +18,7 @@ export async function GET(
     const { data: access } = await supabase
         .from('conversation_participants')
         .select('user_id')
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .eq('user_id', user.id)
         .single()
 
@@ -43,7 +44,7 @@ export async function GET(
         avatar_url
       )
     `)
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .order('created_at', { ascending: false })
         .limit(limit)
 
@@ -65,9 +66,9 @@ export async function GET(
         sender_id: msg.sender_id,
         content: msg.content,
         created_at: msg.created_at,
-        sender_name: (msg.profiles as any)?.name ?? 'Неизвестный',
-        sender_role: (msg.profiles as any)?.role ?? null,
-        sender_avatar: (msg.profiles as any)?.avatar_url ?? null,
+        sender_name: (msg.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.name ?? 'Неизвестный',
+        sender_role: (msg.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.role ?? null,
+        sender_avatar: (msg.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.avatar_url ?? null,
     }))
 
     return NextResponse.json(result)
@@ -76,8 +77,9 @@ export async function GET(
 // POST /api/conversations/:id/messages — отправить сообщение
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const supabase = await createClient()
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -89,7 +91,7 @@ export async function POST(
     const { data: access } = await supabase
         .from('conversation_participants')
         .select('user_id')
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .eq('user_id', user.id)
         .single()
 
@@ -107,7 +109,7 @@ export async function POST(
     const { data: message, error: msgError } = await supabase
         .from('messages')
         .insert({
-            conversation_id: params.id,
+            conversation_id: id,
             sender_id: user.id,
             content: content.trim(),
         })
@@ -133,14 +135,14 @@ export async function POST(
     await supabase
         .from('conversation_participants')
         .update({ last_read_at: new Date().toISOString() })
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .eq('user_id', user.id)
 
     // Находим получателя и создаём ему уведомление
     const { data: recipient } = await supabase
         .from('conversation_participants')
         .select('user_id')
-        .eq('conversation_id', params.id)
+        .eq('conversation_id', id)
         .neq('user_id', user.id)
         .single()
 
@@ -156,7 +158,7 @@ export async function POST(
             type: 'message',
             title: `Новое сообщение от ${senderProfile?.name ?? 'пользователя'}`,
             body: content.trim().slice(0, 100), // превью первых 100 символов
-            metadata: { conversation_id: params.id, sender_id: user.id },
+            metadata: { conversation_id: id, sender_id: user.id },
         })
     }
 
@@ -166,8 +168,8 @@ export async function POST(
         sender_id: message.sender_id,
         content: message.content,
         created_at: message.created_at,
-        sender_name: (message.profiles as any)?.name ?? 'Неизвестный',
-        sender_role: (message.profiles as any)?.role ?? null,
-        sender_avatar: (message.profiles as any)?.avatar_url ?? null,
+        sender_name: (message.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.name ?? 'Неизвестный',
+        sender_role: (message.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.role ?? null,
+        sender_avatar: (message.profiles as unknown as { name: string; role: string; avatar_url: string | null } | null)?.avatar_url ?? null,
     }, { status: 201 })
 }

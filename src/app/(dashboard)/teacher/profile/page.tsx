@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Phone, MapPin, Edit2, BookOpen, Award } from "lucide-react";
+import { Mail, Phone, Edit2, BookOpen, Award } from "lucide-react";
 
 export default function TeacherProfilePage() {
   const { user } = useAuth();

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   Send,
   Paperclip,
@@ -13,9 +14,8 @@ import {
   MessageSquare,
   Loader2,
   ChevronUp,
-  AlertCircle,
 } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useConversations } from "@/hooks/useConversations";
 import { useMessages } from "@/hooks/useMessages";
 import type { Conversation } from "@/types/messaging";
@@ -120,7 +120,7 @@ function ChatWindow({ conversation }: { conversation: Conversation }) {
                 className={`w-10 h-10 bg-gradient-to-br ${getTypeColor(type)} rounded-full flex items-center justify-center text-white text-sm font-bold`}
             >
               {conversation.partner_avatar
-                  ? <img src={conversation.partner_avatar} className="w-10 h-10 rounded-full object-cover" alt="" />
+                  ? <Image src={conversation.partner_avatar} width={40} height={40} className="rounded-full object-cover" alt="" />
                   : getInitials(conversation.partner_name)}
             </div>
             <div>
@@ -242,19 +242,13 @@ function ChatWindow({ conversation }: { conversation: Conversation }) {
 // ─── Главная страница ────────────────────────────────────────────────────────
 
 export default function TeacherMessagesPage() {
-  const { conversations, isLoading, startConversation } = useConversations();
+  const { conversations, isLoading } = useConversations();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<"all" | "parent" | "student" | "colleague">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Выбираем первый диалог автоматически
-  useEffect(() => {
-    if (conversations.length > 0 && !selectedId) {
-      setSelectedId(conversations[0].id);
-    }
-  }, [conversations]);
-
-  const selectedConversation = conversations.find((c) => c.id === selectedId) ?? null;
+  const effectiveSelectedId = selectedId ?? conversations[0]?.id ?? null;
+  const selectedConversation = conversations.find((c) => c.id === effectiveSelectedId) ?? null;
 
   const filteredConversations = conversations.filter((conv) => {
     const type = getTypeFromRole(conv.partner_role);
@@ -304,7 +298,7 @@ export default function TeacherMessagesPage() {
           ].map((tab) => (
               <button
                   key={tab.id}
-                  onClick={() => setFilterType(tab.id as any)}
+                  onClick={() => setFilterType(tab.id as "all" | "parent" | "student" | "colleague")}
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                       filterType === tab.id
                           ? "border-secondary-500 text-secondary-600"
@@ -367,7 +361,7 @@ export default function TeacherMessagesPage() {
                               transition={{ delay: index * 0.05 + 0.2 }}
                               onClick={() => setSelectedId(conv.id)}
                               className={`w-full p-4 text-left hover:bg-neutral-50 transition-colors ${
-                                  selectedId === conv.id ? "bg-secondary-50" : ""
+                                  effectiveSelectedId === conv.id ? "bg-secondary-50" : ""
                               }`}
                           >
                             <div className="flex items-start gap-3">
@@ -375,7 +369,7 @@ export default function TeacherMessagesPage() {
                                   className={`w-10 h-10 bg-gradient-to-br ${getTypeColor(type)} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}
                               >
                                 {conv.partner_avatar
-                                    ? <img src={conv.partner_avatar} className="w-10 h-10 rounded-full object-cover" alt="" />
+                                    ? <Image src={conv.partner_avatar} width={40} height={40} className="rounded-full object-cover" alt="" />
                                     : getInitials(conv.partner_name)}
                               </div>
                               <div className="flex-1 min-w-0">

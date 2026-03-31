@@ -1,17 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Users, 
-  BookOpen, 
-  Calendar, 
-  TrendingUp, 
+import {
+  Users,
+  BookOpen,
+  Calendar,
+  TrendingUp,
   AlertCircle,
-  Clock,
   CheckCircle,
-  XCircle,
   Bell,
-  Zap
 } from "lucide-react";
 
 // Global Stats Component
@@ -70,7 +67,7 @@ function QuickActions() {
         Быстрые действия
       </h3>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {actions.map((action, index) => {
+        {actions.map((action) => {
           const Icon = action.icon;
           return (
             <a

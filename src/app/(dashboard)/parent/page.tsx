@@ -2,12 +2,10 @@
 
 import { motion } from "framer-motion";
 import { 
-  TrendingUp, 
-  Calendar, 
-  MessageSquare, 
+  TrendingUp,
+  Calendar,
+  MessageSquare,
   Award,
-  User,
-  ChevronDown,
   AlertCircle,
   CheckCircle,
   Clock

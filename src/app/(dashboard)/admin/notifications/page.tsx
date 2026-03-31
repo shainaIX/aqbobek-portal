@@ -1,21 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Bell, 
-  Send, 
-  Users, 
-  Calendar, 
+import {
+  Bell,
+  Send,
+  Users,
+  Calendar,
   AlertCircle,
-  Info,
   Search,
   Filter
 } from "lucide-react";
-import { useState } from "react";
 
 export default function AdminNotificationsPage() {
-  const [notificationType, setNotificationType] = useState("general");
-
   const notifications = [
     {
       id: 1,
