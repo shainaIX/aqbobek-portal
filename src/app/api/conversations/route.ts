@@ -106,6 +106,17 @@ export async function GET() {
             const bTime = b?.last_message?.created_at ?? b?.created_at ?? ''
             return bTime.localeCompare(aTime)
         })
+        .filter((conversation, index, array) => {
+            if (!conversation?.partner_id) {
+                return true
+            }
+
+            return (
+                array.findIndex(
+                    item => item?.partner_id === conversation.partner_id
+                ) === index
+            )
+        })
 
     return NextResponse.json(result)
 }
