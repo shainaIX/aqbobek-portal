@@ -1,23 +1,24 @@
 "use client";
 
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Bell,
   BarChart3,
-  Settings,
-  LogOut,
-  Zap,
+  Bell,
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  Shield,
+  LayoutDashboard,
+  LogOut,
   MessageSquare,
+  Monitor,
+  Settings,
+  Shield,
+  Users,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import React, { useState } from "react";
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -49,10 +50,15 @@ export default function AdminSidebar() {
       href: "/admin/users",
     },
     {
-      icon: MessageSquare,  // ← ДОБАВИТЬ
-      label: "Сообщения",   // ← ДОБАВИТЬ
-      href: "/admin/messages",  // ← ДОБАВИТЬ
-      badge: 8,  // ← ДОБАВИТЬ (количество новых сообщений)
+      icon: Monitor,
+      label: "Kiosk",
+      href: "/admin/kiosk",
+    },
+    {
+      icon: MessageSquare,
+      label: "Сообщения",
+      href: "/admin/messages",
+      badge: 8,
     },
     {
       icon: Bell,
@@ -69,21 +75,19 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <motion.aside
         initial={{ x: -280 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.3 }}
-        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r border-neutral-200 z-40 ${
+        className={`fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-neutral-200 bg-white lg:flex ${
           isCollapsed ? "w-20" : "w-64"
         } transition-all duration-300`}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-neutral-200">
+        <div className="flex h-16 items-center justify-between border-b border-neutral-200 px-4">
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-purple-700">
+                <Zap className="h-4 w-4 text-white" />
               </div>
               <span className="font-headline text-sm font-bold text-neutral-900">
                 Aqbobek
@@ -92,18 +96,17 @@ export default function AdminSidebar() {
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-neutral-100"
           >
             {isCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-neutral-600" />
+              <ChevronRight className="h-4 w-4 text-neutral-600" />
             ) : (
-              <ChevronLeft className="w-4 h-4 text-neutral-600" />
+              <ChevronLeft className="h-4 w-4 text-neutral-600" />
             )}
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 space-y-1 px-3 py-4">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -115,24 +118,26 @@ export default function AdminSidebar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all relative ${
+                className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
                   isActive
                     ? "bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-md"
                     : "text-neutral-700 hover:bg-neutral-100"
                 } ${isCollapsed ? "justify-center" : ""}`}
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${
-                  isActive ? "text-white" : "text-neutral-600"
-                }`} />
-                
+                <Icon
+                  className={`h-5 w-5 flex-shrink-0 ${
+                    isActive ? "text-white" : "text-neutral-600"
+                  }`}
+                />
+
                 {!isCollapsed && (
                   <>
-                    <span className="text-sm font-medium flex-1">{item.label}</span>
-                    {item.badge && (
-                      <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
+                    <span className="flex-1 text-sm font-medium">{item.label}</span>
+                    {item.badge ? (
+                      <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-700">
                         {item.badge}
                       </span>
-                    )}
+                    ) : null}
                   </>
                 )}
               </motion.a>
@@ -140,32 +145,48 @@ export default function AdminSidebar() {
           })}
         </nav>
 
-        {/* User Profile */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-neutral-200">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center text-white font-bold">
-                <Shield className="w-5 h-5" />
+        <div className="px-3 pb-3">
+          <a
+            href="/admin/kiosk"
+            className={`flex items-center gap-3 rounded-xl border px-3 py-3 transition-all ${
+              isCollapsed
+                ? "justify-center border-amber-200 bg-amber-50 text-amber-700"
+                : "border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 hover:from-amber-100 hover:to-orange-100"
+            }`}
+          >
+            <Monitor className="h-5 w-5 flex-shrink-0" />
+            {!isCollapsed && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">Запустить kiosk</p>
+                <p className="text-xs text-amber-700">Экран для холла и ресепшена</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-neutral-900 truncate">
+            )}
+          </a>
+        </div>
+
+        {!isCollapsed && (
+          <div className="border-t border-neutral-200 p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-700 font-bold text-white">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-neutral-900">
                   {user?.name}
                 </p>
-                <p className="text-xs text-neutral-500 truncate">
-                  Администратор
-                </p>
+                <p className="truncate text-xs text-neutral-500">Администратор</p>
               </div>
             </div>
             <div className="space-y-1">
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors">
-                <Settings className="w-4 h-4" />
+              <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-100">
+                <Settings className="h-4 w-4" />
                 Настройки
               </button>
               <button
                 onClick={logout}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="h-4 w-4" />
                 Выйти
               </button>
             </div>
@@ -173,8 +194,7 @@ export default function AdminSidebar() {
         )}
       </motion.aside>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-50 safe-area-pb">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white safe-area-pb lg:hidden">
         <div className="grid grid-cols-5">
           {navItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
@@ -184,17 +204,17 @@ export default function AdminSidebar() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center py-3 relative ${
+                className={`relative flex flex-col items-center justify-center py-3 ${
                   isActive ? "text-purple-600" : "text-neutral-500"
                 }`}
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium mt-1">{item.label}</span>
-                {item.badge && (
-                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                <Icon className="h-5 w-5" />
+                <span className="mt-1 text-[10px] font-medium">{item.label}</span>
+                {item.badge ? (
+                  <span className="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
                     {item.badge}
                   </span>
-                )}
+                ) : null}
               </a>
             );
           })}
