@@ -25,7 +25,6 @@ import { getSubjectSummaries } from "@/lib/ai-learning/database";
 import {
   analyzeWithGemini,
   buildGeminiRequest,
-  getGeminiApiKey,
   isGeminiConfigured,
 } from "@/lib/ai-learning/gemini";
 import type { TrainingCard, GeminiAnalysisResponse } from "@/lib/ai-learning/types";
@@ -91,6 +90,10 @@ export default function AIRecommendationsPage() {
 
   // ── Generate cards (local analysis) ────────────────────────────────────────
   async function handleGenerate() {
+    if (isAnalyzing || isGeminiLoading) {
+      return;
+    }
+
     setIsAnalyzing(true);
     setGeminiResponse(null);
     setGeminiError(null);
@@ -102,9 +105,7 @@ export default function AIRecommendationsPage() {
     setHasGenerated(true);
     setIsAnalyzing(false);
 
-    // If Gemini API key is configured, auto-enhance
-    const apiKey = getGeminiApiKey();
-    if (apiKey && generated.length > 0) {
+    if (generated.length > 0) {
       setIsGeminiLoading(true);
       try {
         const weakTopics = analyzeStudent(studentId);
@@ -113,7 +114,7 @@ export default function AIRecommendationsPage() {
           weakTopics,
           subjectSummaries
         );
-        const response = await analyzeWithGemini(request, apiKey);
+        const response = await analyzeWithGemini(request);
         setGeminiResponse(response);
       } catch (err) {
         setGeminiError(
@@ -228,7 +229,7 @@ export default function AIRecommendationsPage() {
           )}
           <button
             onClick={handleGenerate}
-            disabled={isAnalyzing}
+            disabled={isAnalyzing || isGeminiLoading}
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-primary-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-60 disabled:scale-100"
           >
             {isAnalyzing ? (
@@ -368,7 +369,8 @@ export default function AIRecommendationsPage() {
             </select>
             <button
               onClick={handleGenerate}
-              className="px-4 py-2.5 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors flex items-center gap-2"
+              disabled={isAnalyzing || isGeminiLoading}
+              className="px-4 py-2.5 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Brain className="w-4 h-4" />
               Обновить анализ
