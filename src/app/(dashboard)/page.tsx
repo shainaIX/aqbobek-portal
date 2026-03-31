@@ -102,10 +102,16 @@ export default function DashboardPage() {
             color="primary"
           />
         </div>
+        <div className="lg:col-span-2">
+            <AIRecommendations limit={2} />
+        </div>
 
+        <SubjectProgress limit={4} showLink={true} />
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* AI Insights */}
+
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, 
   Target, 
@@ -9,8 +9,10 @@ import {
   CheckCircle2, 
   ArrowRight,
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  Clock
 } from "lucide-react";
+import Link from "next/link";
 
 interface Recommendation {
   id: string;
@@ -23,13 +25,18 @@ interface Recommendation {
     completed?: boolean;
   }[];
   priority: 'high' | 'medium' | 'low';
+  deadline?: string;
 }
 
 interface AIRecommendationsProps {
   recommendations?: Recommendation[];
+  limit?: number;
 }
 
-export default function AIRecommendations({ recommendations }: AIRecommendationsProps) {
+export default function AIRecommendations({ 
+  recommendations,
+  limit
+}: AIRecommendationsProps) {
   // Mock данные если не переданы
   const defaultRecommendations: Recommendation[] = [
     {
@@ -43,6 +50,7 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
         { icon: 'book', text: 'Повторите формулы из главы 3', completed: true },
       ],
       priority: 'high',
+      deadline: '2 дня'
     },
     {
       id: '2',
@@ -54,6 +62,7 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
         { icon: 'book', text: 'Попробуйте задачи повышенной сложности', completed: false },
       ],
       priority: 'low',
+      deadline: '5 дней'
     },
     {
       id: '3',
@@ -66,10 +75,12 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
         { icon: 'task', text: 'Составьте хронологию событий', completed: false },
       ],
       priority: 'high',
+      deadline: '3 дня'
     },
   ];
 
   const displayRecommendations = recommendations || defaultRecommendations;
+  const limitedRecommendations = limit ? displayRecommendations.slice(0, limit) : displayRecommendations;
 
   const getProbabilityColor = (probability: number) => {
     if (probability >= 80) return 'text-green-600 bg-green-100 border-green-300';
@@ -104,7 +115,7 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
       className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
     >
       {/* Header */}
@@ -122,15 +133,17 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
             </p>
           </div>
         </div>
-        <button className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors flex items-center gap-1">
-          Все рекомендации
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        <Link 
+          href="/student/ai" 
+          className="text-sm font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+        >
+          Все рекомендации <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* Recommendations List */}
       <div className="divide-y divide-neutral-100">
-        {displayRecommendations.map((rec, index) => (
+        {limitedRecommendations.map((rec, index) => (
           <motion.div
             key={rec.id}
             initial={{ opacity: 0, x: -20 }}
@@ -179,7 +192,7 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
             </div>
 
             {/* Actions */}
-            <div className="space-y-2">
+            <div className="space-y-2 mb-4">
               {rec.actions.map((action, actionIndex) => {
                 const Icon = ActionIcon[action.icon];
                 return (
@@ -217,15 +230,15 @@ export default function AIRecommendations({ recommendations }: AIRecommendations
             </div>
 
             {/* Priority Indicator */}
-            {rec.priority === 'high' && (
+            {rec.priority === 'high' && rec.deadline && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="mt-3 flex items-center gap-2 text-xs text-red-600 bg-red-50 p-2 rounded-lg"
+                className="flex items-center gap-2 text-xs text-red-600 bg-red-50 p-3 rounded-lg"
               >
-                <AlertCircle className="w-4 h-4" />
-                <span className="font-medium">Рекомендуется выполнить в ближайшие 2 дня</span>
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium">Рекомендуется выполнить в ближайшие {rec.deadline}</span>
               </motion.div>
             )}
           </motion.div>

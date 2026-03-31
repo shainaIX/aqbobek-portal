@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
+  
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -42,6 +43,13 @@ export default function Sidebar() {
       href: "/student/schedule",
       badge: 2,
     },
+    {
+      icon: Zap,
+      label: "AI-рекомендации",
+      href: "/student/ai",
+      badge: 2,
+    },
+
     {
       icon: BookOpen,
       label: "Оценки",
