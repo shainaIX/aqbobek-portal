@@ -1,35 +1,34 @@
 import type {
-  GeminiAnalysisRequest,
-  GeminiAnalysisResponse,
+  AIAnalysisRequest,
+  AIAnalysisResponse,
   SubjectSummary,
   WeakTopic,
 } from "@/lib/ai-learning/types";
 
-const GEMINI_BASE_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models";
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "llama-3.3-70b-versatile";
 
-export class GeminiApiError extends Error {
+export class AIApiError extends Error {
   status: number;
 
   constructor(message: string, status: number) {
     super(message);
-    this.name = "GeminiApiError";
+    this.name = "AIApiError";
     this.status = status;
   }
 }
 
-export function isGeminiConfigured(): boolean {
+export function isAIConfigured(): boolean {
   if (typeof window !== "undefined") {
     return true;
   }
 
-  return !!getServerGeminiApiKey();
+  return !!getGroqApiKey();
 }
 
-function getServerGeminiApiKey(): string | null {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
+function getGroqApiKey(): string | null {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
 
   if (!apiKey || apiKey.includes("...")) {
     return null;
@@ -67,7 +66,7 @@ function extractRetryDelay(raw: string) {
   return null;
 }
 
-function extractGeminiErrorMessage(raw: string) {
+function extractErrorMessage(raw: string) {
   try {
     const parsed = JSON.parse(raw) as {
       error?: { message?: string };
@@ -79,90 +78,88 @@ function extractGeminiErrorMessage(raw: string) {
   }
 }
 
-function formatGeminiError(status: number, raw: string) {
-  const detailedMessage = extractGeminiErrorMessage(raw);
+function formatApiError(status: number, raw: string) {
+  const detailedMessage = extractErrorMessage(raw);
 
   if (status === 429) {
     const retryDelay = extractRetryDelay(raw);
     return retryDelay
-      ? `Лимит Gemini API исчерпан. Повторите через ${retryDelay} или увеличьте квоту в Google AI Studio.`
-      : "Лимит Gemini API исчерпан. Подождите немного или увеличьте квоту в Google AI Studio.";
+      ? `Лимит AI API исчерпан. Повторите через ${retryDelay} или проверьте квоту Groq.`
+      : "Лимит AI API исчерпан. Подождите немного или проверьте квоту Groq.";
   }
 
   if (status === 401 || status === 403) {
-    return "Gemini API отклонил ключ. Проверьте GEMINI_API_KEY и доступ к модели.";
+    return "AI API отклонил ключ. Проверьте GROQ_API_KEY и доступ к модели.";
   }
 
   if (status === 400 && detailedMessage) {
-    return `Gemini отклонил запрос: ${detailedMessage}`;
+    return `AI отклонил запрос: ${detailedMessage}`;
   }
 
   if (detailedMessage) {
     return detailedMessage;
   }
 
-  return `Gemini API error ${status}`;
+  return `AI API error ${status}`;
 }
 
-async function analyzeWithGeminiServer(
-  request: GeminiAnalysisRequest,
+async function analyzeOnServer(
+  request: AIAnalysisRequest,
   model = DEFAULT_MODEL,
-): Promise<GeminiAnalysisResponse> {
-  const apiKey = getServerGeminiApiKey();
+): Promise<AIAnalysisResponse> {
+  const apiKey = getGroqApiKey();
 
   if (!apiKey) {
-    throw new GeminiApiError("GEMINI_API_KEY не настроен на сервере", 500);
+    throw new AIApiError("GROQ_API_KEY не настроен на сервере", 500);
   }
 
   const prompt = buildPrompt(request);
 
-  const res = await fetch(
-    `${GEMINI_BASE_URL}/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2048,
-          responseMimeType: "application/json",
-        },
-      }),
+  const res = await fetch(GROQ_BASE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
     },
-  );
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+      max_tokens: 2048,
+      response_format: { type: "json_object" },
+    }),
+  });
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new GeminiApiError(formatGeminiError(res.status, errText), res.status);
+    throw new AIApiError(formatApiError(res.status, errText), res.status);
   }
 
   const data = (await res.json()) as {
-    candidates?: { content?: { parts?: { text?: string }[] } }[];
+    choices?: { message?: { content?: string } }[];
   };
 
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = data.choices?.[0]?.message?.content;
   if (!text) {
-    throw new GeminiApiError("Gemini вернул пустой ответ", 502);
+    throw new AIApiError("AI вернул пустой ответ", 502);
   }
 
-  return JSON.parse(normalizeJsonResponse(text)) as GeminiAnalysisResponse;
+  return JSON.parse(normalizeJsonResponse(text)) as AIAnalysisResponse;
 }
 
-export async function analyzeWithGemini(
-  request: GeminiAnalysisRequest,
-  _apiKey?: string,
+export async function analyzeWithAI(
+  request: AIAnalysisRequest,
   model = DEFAULT_MODEL,
-): Promise<GeminiAnalysisResponse> {
+): Promise<AIAnalysisResponse> {
   if (typeof window !== "undefined") {
-    const res = await fetch("/api/ai/gemini", {
+    const res = await fetch("/api/ai/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
     });
 
     if (!res.ok) {
-      let message = "Ошибка Gemini API";
+      let message = "Ошибка AI API";
 
       try {
         const data = (await res.json()) as { error?: string };
@@ -176,21 +173,21 @@ export async function analyzeWithGemini(
       throw new Error(message);
     }
 
-    return (await res.json()) as GeminiAnalysisResponse;
+    return (await res.json()) as AIAnalysisResponse;
   }
 
-  return analyzeWithGeminiServer(request, model);
+  return analyzeOnServer(request, model);
 }
 
-export function buildGeminiRequest(
+export function buildAIRequest(
   studentName: string,
   weakTopics: WeakTopic[],
   subjectSummaries: SubjectSummary[],
-): GeminiAnalysisRequest {
+): AIAnalysisRequest {
   return { studentName, weakTopics, subjectSummaries };
 }
 
-function buildPrompt(request: GeminiAnalysisRequest): string {
+function buildPrompt(request: AIAnalysisRequest): string {
   const subjectBlock = request.subjectSummaries
     .map(
       (s: SubjectSummary) =>

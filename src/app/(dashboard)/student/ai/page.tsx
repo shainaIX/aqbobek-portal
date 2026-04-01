@@ -16,18 +16,18 @@ import {
   AlertTriangle,
   Brain,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { generateCards } from "@/lib/ai-learning/cardGenerator";
-import { analyzeStudent } from "@/lib/ai-learning/analyzer";
-import { getSubjectSummaries } from "@/lib/ai-learning/database";
+import { generateCards, generateCardsAsync } from "@/lib/ai-learning/cardGenerator";
+import { analyzeStudent, analyzeStudentAsync } from "@/lib/ai-learning/analyzer";
+import { getSubjectSummaries, fetchSubjectSummaries, fetchSubjects, fetchStudentRecord } from "@/lib/ai-learning/database";
 import {
-  analyzeWithGemini,
-  buildGeminiRequest,
-  isGeminiConfigured,
-} from "@/lib/ai-learning/gemini";
-import type { TrainingCard, GeminiAnalysisResponse } from "@/lib/ai-learning/types";
+  analyzeWithAI,
+  buildAIRequest,
+  isAIConfigured,
+} from "@/lib/ai-learning/groq";
+import type { TrainingCard, AIAnalysisResponse, SubjectSummary } from "@/lib/ai-learning/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -68,20 +68,45 @@ function gradeColor(g: number) {
 
 export default function AIRecommendationsPage() {
   const { user } = useAuth();
-  const studentId = user?.id ?? "1";
 
   const [cards, setCards] = useState<TrainingCard[]>([]);
-  const [geminiResponse, setGeminiResponse] =
-    useState<GeminiAnalysisResponse | null>(null);
+  const [aiResponse, setAiResponse] =
+    useState<AIAnalysisResponse | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isGeminiLoading, setIsGeminiLoading] = useState(false);
-  const [geminiError, setGeminiError] = useState<string | null>(null);
+  const [isAILoading, setIsAILoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [filter, setFilter] = useState<"all" | "critical" | "high" | "medium" | "low">("all");
   const [search, setSearch] = useState("");
+  const [subjectSummaries, setSubjectSummaries] = useState<SubjectSummary[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // Subject summaries are always available (no AI needed)
-  const subjectSummaries = getSubjectSummaries(studentId);
+  // Load subject summaries on mount
+  useEffect(() => {
+    async function loadSummaries() {
+      if (!user?.id) return;
+
+      try {
+        const summaries = await fetchSubjectSummaries(user.id);
+        setSubjectSummaries(summaries);
+        setIsDataLoaded(true);
+      } catch (error) {
+        console.error('Error loading subject summaries:', error);
+      }
+    }
+
+    loadSummaries();
+  }, [user?.id]);
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <p className="text-neutral-600">Пожалуйста, войдите в систему для доступа к AI-рекомендациям.</p>
+      </div>
+    );
+  }
+
+  const studentId = user.id;
   const totalXP = cards.reduce((acc, c) => acc + c.xp, 0);
   const completedXP = cards.reduce(
     (acc, c) => acc + Math.round((c.progress / 100) * c.xp),
@@ -90,39 +115,53 @@ export default function AIRecommendationsPage() {
 
   // ── Generate cards (local analysis) ────────────────────────────────────────
   async function handleGenerate() {
-    if (isAnalyzing || isGeminiLoading) {
+    if (isAnalyzing || isAILoading) {
       return;
     }
 
     setIsAnalyzing(true);
-    setGeminiResponse(null);
-    setGeminiError(null);
+    setAiResponse(null);
+    setAiError(null);
 
-    // Small delay so the loading animation is visible
-    await new Promise((r) => setTimeout(r, 600));
-    const generated = generateCards(studentId);
-    setCards(generated);
-    setHasGenerated(true);
-    setIsAnalyzing(false);
+    try {
+      // Ensure data is loaded from Supabase
+      await Promise.all([
+        fetchSubjects(),
+        fetchStudentRecord(studentId),
+      ]);
 
-    if (generated.length > 0) {
-      setIsGeminiLoading(true);
-      try {
-        const weakTopics = analyzeStudent(studentId);
-        const request = buildGeminiRequest(
-          user?.name ?? "Ученик",
-          weakTopics,
-          subjectSummaries
-        );
-        const response = await analyzeWithGemini(request);
-        setGeminiResponse(response);
-      } catch (err) {
-        setGeminiError(
-          err instanceof Error ? err.message : "Ошибка Gemini API"
-        );
-      } finally {
-        setIsGeminiLoading(false);
+      // Small delay so the loading animation is visible
+      await new Promise((r) => setTimeout(r, 600));
+
+      // Generate cards from Supabase data
+      const generated = await generateCardsAsync(studentId);
+      setCards(generated);
+      setHasGenerated(true);
+
+      if (generated.length > 0) {
+        setIsAILoading(true);
+        try {
+          const weakTopics = analyzeStudent(studentId, true); // Use cached data
+          const request = buildAIRequest(
+            user?.name ?? "Ученик",
+            weakTopics,
+            subjectSummaries
+          );
+          const response = await analyzeWithAI(request);
+          setAiResponse(response);
+        } catch (err) {
+          setAiError(
+            err instanceof Error ? err.message : "Ошибка AI API"
+          );
+        } finally {
+          setIsAILoading(false);
+        }
       }
+    } catch (error) {
+      console.error('Error generating cards:', error);
+      setAiError('Ошибка загрузки данных');
+    } finally {
+      setIsAnalyzing(false);
     }
   }
 
@@ -136,8 +175,8 @@ export default function AIRecommendationsPage() {
   });
 
   // ── Gemini insight for a card ───────────────────────────────────────────────
-  function geminiInsight(topicId: string) {
-    return geminiResponse?.enhancedCards.find((e) => e.topicId === topicId);
+  function getAIInsight(topicId: string) {
+    return aiResponse?.enhancedCards.find((e) => e.topicId === topicId);
   }
 
   return (
@@ -175,29 +214,31 @@ export default function AIRecommendationsPage() {
       </motion.div>
 
       {/* Subject overview (always visible) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {subjectSummaries.map((s, i) => (
-          <motion.div
-            key={s.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-xl border border-neutral-200 p-4 text-center"
-          >
-            <div
-              className={`w-8 h-8 rounded-lg mx-auto mb-2 ${s.color} flex items-center justify-center`}
+      {isDataLoaded && subjectSummaries.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {subjectSummaries.filter(s => s.grade > 0).map((s, i) => (
+            <motion.div
+              key={s.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white rounded-xl border border-neutral-200 p-4 text-center"
             >
-              <span className="text-white text-xs font-bold">{s.name[0]}</span>
-            </div>
-            <p className="text-xs text-neutral-500 mb-1 truncate">{s.name}</p>
-            <span
-              className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${gradeColor(s.grade)}`}
-            >
-              {s.grade}
-            </span>
-          </motion.div>
-        ))}
-      </div>
+              <div
+                className={`w-8 h-8 rounded-lg mx-auto mb-2 ${s.color} flex items-center justify-center`}
+              >
+                <span className="text-white text-xs font-bold">{s.name[0]}</span>
+              </div>
+              <p className="text-xs text-neutral-500 mb-1 truncate">{s.name}</p>
+              <span
+                className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${gradeColor(s.grade)}`}
+              >
+                {s.grade}
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Generate button / loading / Gemini overall insight */}
       {!hasGenerated ? (
@@ -216,20 +257,20 @@ export default function AIRecommendationsPage() {
             AI проанализирует твои оценки, посещаемость и динамику по каждой теме,
             и составит индивидуальный план обучения.
           </p>
-          {isGeminiConfigured() && (
+          {isAIConfigured() && (
             <p className="text-xs text-purple-600 mb-6 font-medium flex items-center justify-center gap-1">
               <Sparkles className="w-3.5 h-3.5" />
-              Gemini AI подключён — дополнит анализ персональными инсайтами
+              AI подключён — дополнит анализ персональными инсайтами
             </p>
           )}
-          {!isGeminiConfigured() && (
+          {!isAIConfigured() && (
             <p className="text-xs text-neutral-400 mb-6">
-              Добавь NEXT_PUBLIC_GEMINI_API_KEY в .env.local для AI-инсайтов от Gemini
+              Добавь GROQ_API_KEY в .env.local для AI-инсайтов
             </p>
           )}
           <button
             onClick={handleGenerate}
-            disabled={isAnalyzing || isGeminiLoading}
+            disabled={isAnalyzing || isAILoading || !isDataLoaded}
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-primary-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-60 disabled:scale-100"
           >
             {isAnalyzing ? (
@@ -293,9 +334,9 @@ export default function AIRecommendationsPage() {
             </motion.div>
           </div>
 
-          {/* Gemini overall insight */}
+          {/* AI overall insight */}
           <AnimatePresence>
-            {isGeminiLoading && (
+            {isAILoading && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -304,11 +345,11 @@ export default function AIRecommendationsPage() {
               >
                 <div className="w-5 h-5 border-2 border-purple-400/40 border-t-purple-500 rounded-full animate-spin flex-shrink-0" />
                 <p className="text-sm text-purple-700 font-medium">
-                  Gemini анализирует твои данные...
+                  AI анализирует твои данные...
                 </p>
               </motion.div>
             )}
-            {geminiError && (
+            {aiError && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -316,10 +357,10 @@ export default function AIRecommendationsPage() {
                 className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3"
               >
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">Gemini: {geminiError}</p>
+                <p className="text-sm text-red-700">AI: {aiError}</p>
               </motion.div>
             )}
-            {geminiResponse?.overallInsight && (
+            {aiResponse?.overallInsight && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -330,10 +371,10 @@ export default function AIRecommendationsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-purple-800 mb-1">
-                    Gemini — общий анализ
+                    AI — общий анализ
                   </p>
                   <p className="text-sm text-purple-700 leading-relaxed">
-                    {geminiResponse.overallInsight}
+                    {aiResponse.overallInsight}
                   </p>
                 </div>
               </motion.div>
@@ -369,7 +410,7 @@ export default function AIRecommendationsPage() {
             </select>
             <button
               onClick={handleGenerate}
-              disabled={isAnalyzing || isGeminiLoading}
+              disabled={isAnalyzing || isAILoading}
               className="px-4 py-2.5 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Brain className="w-4 h-4" />
@@ -380,7 +421,7 @@ export default function AIRecommendationsPage() {
           {/* Cards */}
           <div className="space-y-4">
             {filtered.map((card, index) => {
-              const insight = geminiInsight(card.topicId);
+              const insight = getAIInsight(card.topicId);
               const resourceCounts = {
                 videos: card.resources.filter((r) => r.type === "video").length,
                 theory: card.resources.filter((r) => r.type === "theory").length,
@@ -479,7 +520,7 @@ export default function AIRecommendationsPage() {
                           <div className="flex items-center gap-2 mb-1">
                             <Sparkles className="w-3.5 h-3.5 text-purple-500" />
                             <span className="text-xs font-semibold text-purple-700">
-                              Gemini AI
+                              AI
                             </span>
                             <span className="text-xs text-purple-500">
                               · {insight.estimatedDays} д. на освоение

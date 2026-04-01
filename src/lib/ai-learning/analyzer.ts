@@ -1,10 +1,10 @@
 /**
  * Weakness detection engine.
- * Reads student performance data and produces a sorted list of WeakTopic objects.
+ * Reads student performance data from Supabase and produces a sorted list of WeakTopic objects.
  */
 
 import type { WeakTopic } from './types';
-import { getStudentRecord, getSubjectById } from './database';
+import { getStudentRecord, getSubjectById, fetchStudentRecord, fetchSubjects } from './database';
 
 // ─── Scoring weights (must sum to 1.0) ────────────────────────────────────────
 const W = {
@@ -113,8 +113,25 @@ function scoreToPriority(
 /**
  * Analyse a student and return their weak topics sorted by weakness score.
  * Only topics with weaknessScore > 15 are included (everything else is fine).
+ *
+ * @param studentId - The student ID to analyze
+ * @param useCached - If true, uses cached data only (faster but may be stale)
  */
-export function analyzeStudent(studentId: string): WeakTopic[] {
+export function analyzeStudent(studentId: string, useCached = false): WeakTopic[] {
+  if (useCached) {
+    return analyzeStudentSync(studentId);
+  }
+
+  // For async analysis, we need to ensure data is loaded first
+  // This is handled by the caller via fetchStudentRecord
+  return analyzeStudentSync(studentId);
+}
+
+/**
+ * Synchronous analysis using cached data.
+ * Call fetchStudentRecord first to ensure data is loaded.
+ */
+function analyzeStudentSync(studentId: string): WeakTopic[] {
   const record = getStudentRecord(studentId);
   if (!record) return [];
 
@@ -162,4 +179,13 @@ export function analyzeStudent(studentId: string): WeakTopic[] {
 
   // Sort: highest weakness first
   return weakTopics.sort((a, b) => b.weaknessScore - a.weaknessScore);
+}
+
+/**
+ * Async version that ensures data is loaded before analysis.
+ */
+export async function analyzeStudentAsync(studentId: string): Promise<WeakTopic[]> {
+  await fetchStudentRecord(studentId);
+  await fetchSubjects();
+  return analyzeStudent(studentId, true);
 }

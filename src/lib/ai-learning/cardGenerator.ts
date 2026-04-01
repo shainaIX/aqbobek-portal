@@ -1,12 +1,12 @@
 /**
  * Assembles TrainingCard objects from analyzed weak topics.
- * This is the final step before rendering — combines analysis + resources.
+ * Fetches data from Supabase and combines with resources.
  */
 
 import type { TrainingCard } from './types';
-import { analyzeStudent } from './analyzer';
+import { analyzeStudent, analyzeStudentAsync } from './analyzer';
 import { getResources } from './resourceMapper';
-import { getStudentRecord, getSubjectById } from './database';
+import { getStudentRecord, getSubjectById, fetchTrainingCards, fetchSubjects, fetchStudentRecord } from './database';
 
 /** Returns estimated study minutes based on weakness score and subtopic count. */
 function estimateMinutes(weaknessScore: number, subtopicCount: number): number {
@@ -34,11 +34,11 @@ function calcDeadline(priority: 'critical' | 'high' | 'medium' | 'low'): string 
 }
 
 /**
- * Generate training cards for a student.
- * Returns cards sorted by weakness score (highest first).
+ * Generate training cards for a student using cached data.
+ * Call fetchStudentRecord and fetchSubjects first to ensure data is loaded.
  */
 export function generateCards(studentId: string): TrainingCard[] {
-  const weakTopics = analyzeStudent(studentId);
+  const weakTopics = analyzeStudent(studentId, true);
   const record = getStudentRecord(studentId);
 
   return weakTopics.map((wt) => {
@@ -72,14 +72,61 @@ export function generateCards(studentId: string): TrainingCard[] {
   });
 }
 
+/**
+ * Async version that loads data from Supabase first.
+ */
+export async function generateCardsAsync(studentId: string): Promise<TrainingCard[]> {
+  // Ensure data is loaded
+  await Promise.all([
+    fetchSubjects(),
+    fetchStudentRecord(studentId),
+  ]);
+
+  // Also fetch training cards progress from Supabase
+  const trainingProgress = await fetchTrainingCards(studentId);
+
+  const weakTopics = await analyzeStudentAsync(studentId);
+  const record = getStudentRecord(studentId);
+
+  return weakTopics.map((wt) => {
+    const subject = getSubjectById(wt.subjectId);
+    const resources = getResources(wt.topicId, wt.topicName);
+
+    // Use progress from Supabase training_cards, fallback to in-memory
+    const progress = trainingProgress[wt.topicId] ?? record?.trainingProgress[wt.topicId] ?? 0;
+
+    return {
+      id: `${wt.subjectId}_${wt.topicId}`,
+      subjectId: wt.subjectId,
+      subject: wt.subjectName,
+      subjectColor: wt.subjectColor,
+      gradientFrom: subject?.gradientFrom ?? 'from-neutral-400',
+      gradientTo: subject?.gradientTo ?? 'to-neutral-600',
+      topicId: wt.topicId,
+      topic: wt.topicName,
+      subtopics: wt.subtopics,
+      priority: wt.priority,
+      weaknessScore: wt.weaknessScore,
+      signals: wt.signals,
+      resources,
+      estimatedMinutes: estimateMinutes(wt.weaknessScore, wt.subtopics.length),
+      xp: calcXP(wt.weaknessScore),
+      progress,
+      deadline: calcDeadline(wt.priority),
+      avgGrade: wt.avgGrade,
+      gradeTrend: wt.gradeTrend,
+    };
+  });
+}
+
 /** Update in-memory training progress for a topic (call on card interactions). */
 export function updateTopicProgress(
   studentId: string,
   topicId: string,
   progress: number,
 ) {
-  const { studentRecords } = require('./database') as typeof import('./database');
-  const record = studentRecords.find((r) => r.studentId === studentId);
+  const { getStudentRecord } = require('./database') as typeof import('./database');
+  const record = getStudentRecord(studentId);
   if (record) {
     record.trainingProgress[topicId] = Math.min(100, Math.max(0, progress));
   }

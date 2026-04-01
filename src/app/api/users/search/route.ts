@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     .single();
 
   if (profileError || !profile?.role) {
-    return NextResponse.json({ error: "User profile is unavailable" }, { status: 403 });
+    return NextResponse.json({ error: "Профиль пользователя недоступен" }, { status: 403 });
   }
 
   const currentRole = profile.role as UserRole;

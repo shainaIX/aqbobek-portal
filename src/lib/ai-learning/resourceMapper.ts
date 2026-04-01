@@ -1,12 +1,10 @@
 /**
  * Maps topic IDs to curated learning resources.
- * For unmapped topics, YouTube / Wikipedia search URLs are auto-generated.
- *
- * All URLs use public search pages — no specific content is hardcoded,
- * so links stay valid regardless of content changes.
+ * Fetches resources from Supabase first, falls back to auto-generated search URLs.
  */
 
-import type { Resource } from './types';
+import type { Resource, ResourceType } from './types';
+import { createClient } from '@/lib/supabase/client';
 
 type ResourceMap = Record<string, Resource[]>;
 
@@ -18,7 +16,7 @@ const wikiRu = (article: string) =>
 
 const khanEn = (path: string) => `https://www.khanacademy.org${path}`;
 
-/** Pre-mapped resources per topicId. */
+/** Pre-mapped resources per topicId (fallback for when Supabase is empty). */
 const resourceMap: ResourceMap = {
   // ── Алгебра ──────────────────────────────────────────────────────────────
   algebra_quadratic: [
@@ -164,11 +162,95 @@ const resourceMap: ResourceMap = {
   ],
 };
 
+/** Cache for Supabase resources */
+const resourcesCache = new Map<string, Resource[]>();
+
 /**
- * Returns resources for a given topicId.
- * Falls back to auto-generated search links if the topic is not in the map.
+ * Fetch resources for a topic from Supabase.
+ * Falls back to hardcoded map, then to auto-generated search links.
+ */
+export async function fetchResourcesFromSupabase(topicId: string, topicName: string): Promise<Resource[]> {
+  // Check cache first
+  if (resourcesCache.has(topicId)) {
+    return resourcesCache.get(topicId)!;
+  }
+
+  try {
+    const supabase = createClient();
+
+    // Extract numeric topic ID from our format (topic_NNN)
+    const numericId = parseInt(topicId.replace('topic_', ''), 10);
+
+    if (isNaN(numericId)) {
+      // Invalid topic ID, use fallback
+      return getFallbackResources(topicId, topicName);
+    }
+
+    const { data, error } = await supabase
+      .from('resources')
+      .select('id, title, url, resource_type, difficulty')
+      .eq('topic_id', numericId)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching resources from Supabase:', error);
+      return getFallbackResources(topicId, topicName);
+    }
+
+    if (data && data.length > 0) {
+      const resources: Resource[] = data.map((r) => ({
+        type: r.resource_type as ResourceType || 'video',
+        title: r.title,
+        url: r.url,
+        duration: undefined,
+      }));
+      resourcesCache.set(topicId, resources);
+      return resources;
+    }
+  } catch (err) {
+    console.error('Error fetching resources:', err);
+  }
+
+  // Fall back to hardcoded or auto-generated resources
+  return getFallbackResources(topicId, topicName);
+}
+
+/** Get fallback resources (hardcoded map or auto-generated) */
+function getFallbackResources(topicId: string, topicName: string): Resource[] {
+  const mapped = resourceMap[topicId];
+  if (mapped && mapped.length > 0) return mapped;
+
+  // Auto-generate fallback resources
+  return [
+    {
+      type: 'video',
+      title: `${topicName} — видео-уроки`,
+      url: ytSearch(`${topicName} объяснение урок`),
+      duration: '~15 мин',
+    },
+    {
+      type: 'theory',
+      title: `${topicName} — Википедия`,
+      url: wikiRu(topicName),
+    },
+    {
+      type: 'practice',
+      title: `${topicName} — задачи и тесты`,
+      url: ytSearch(`${topicName} задачи решение ЕНТ`),
+    },
+  ];
+}
+
+/**
+ * Synchronous version - uses cached data or hardcoded fallback.
+ * For use in components that don't support async loading.
  */
 export function getResources(topicId: string, topicName: string): Resource[] {
+  // Check cache first
+  const cached = resourcesCache.get(topicId);
+  if (cached) return cached;
+
+  // Use hardcoded map or auto-generate
   const mapped = resourceMap[topicId];
   if (mapped && mapped.length > 0) return mapped;
 

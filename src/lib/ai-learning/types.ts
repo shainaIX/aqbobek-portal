@@ -95,7 +95,7 @@ export interface TrainingCard {
   deadline: string;
   avgGrade: number;
   gradeTrend: 'improving' | 'stable' | 'declining';
-  // Filled in by Gemini after API call
+  // Filled in by AI after API call
   aiInsight?: string;
   suggestedApproach?: string;
 }
@@ -121,22 +121,22 @@ export interface RecentGradeRow {
   type: GradeType;
 }
 
-// ─── Gemini API ───────────────────────────────────────────────────────────────
+// ─── AI Analysis API ─────────────────────────────────────────────────────────
 
-export interface GeminiAnalysisRequest {
+export interface AIAnalysisRequest {
   studentName: string;
   weakTopics: WeakTopic[];
   subjectSummaries: SubjectSummary[];
 }
 
-export interface GeminiEnhancedCard {
+export interface AIEnhancedCard {
   topicId: string;
   aiInsight: string;
   suggestedApproach: string;
   estimatedDays: number;
 }
 
-export interface GeminiAnalysisResponse {
-  enhancedCards: GeminiEnhancedCard[];
+export interface AIAnalysisResponse {
+  enhancedCards: AIEnhancedCard[];
   overallInsight: string;
 }

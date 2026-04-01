@@ -9,7 +9,7 @@ export async function GET() {
     // Получаем текущего пользователя
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
 
     // Находим все диалоги где участвует пользователь
@@ -46,57 +46,78 @@ export async function GET() {
         return NextResponse.json({ error: convError.message }, { status: 500 })
     }
 
-    // Для каждого диалога получаем данные собеседника и последнее сообщение
-    const enriched = await Promise.all(
-        (conversations ?? []).map(async (conv) => {
-            // Находим участника который НЕ текущий пользователь
-            const partnerParticipant = conv.conversation_participants.find(
-                (p: { user_id: string }) => p.user_id !== user.id
-            )
+    // Собираем ID собеседников из participation данных
+    const partnerIdMap = new Map<string, string>()
+    for (const conv of conversations ?? []) {
+        const partner = conv.conversation_participants.find(
+            (p: { user_id: string }) => p.user_id !== user.id
+        )
+        if (partner) {
+            partnerIdMap.set(conv.id, partner.user_id)
+        }
+    }
 
-            if (!partnerParticipant) return null
+    const partnerIds = [...new Set(partnerIdMap.values())]
 
-            // Получаем профиль собеседника
-            const { data: partner } = await adminClient
-                .from('profiles') // ← таблица профилей (см. ниже)
-                .select('id, name, role, avatar_url')
-                .eq('id', partnerParticipant.user_id)
-                .single()
+    // Batch: профили всех собеседников (1 запрос вместо N)
+    const { data: profiles } = partnerIds.length
+        ? await adminClient
+            .from('profiles')
+            .select('id, name, role, avatar_url')
+            .in('id', partnerIds)
+        : { data: [] }
 
-            // Получаем последнее сообщение
-            const { data: lastMsg } = await adminClient
-                .from('messages')
-                .select('content, created_at, sender_id')
-                .eq('conversation_id', conv.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .single()
-
-            // Считаем непрочитанные
-            const myParticipation = participations.find(
-                p => p.conversation_id === conv.id
-            )
-            const lastReadAt = myParticipation?.last_read_at ?? '1970-01-01'
-
-            const { count: unreadCount } = await adminClient
-                .from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('conversation_id', conv.id)
-                .neq('sender_id', user.id)
-                .gt('created_at', lastReadAt)
-
-            return {
-                id: conv.id,
-                created_at: conv.created_at,
-                partner_id: partner?.id ?? null,
-                partner_name: partner?.name ?? 'Неизвестный',
-                partner_role: partner?.role ?? null,
-                partner_avatar: partner?.avatar_url ?? null,
-                last_message: lastMsg ?? null,
-                unread_count: unreadCount ?? 0,
-            }
-        })
+    const profileMap = new Map(
+        (profiles ?? []).map(p => [p.id, p])
     )
+
+    // Batch: последние сообщения всех диалогов (1 запрос вместо N)
+    const { data: recentMessages } = await adminClient
+        .from('messages')
+        .select('conversation_id, content, created_at, sender_id')
+        .in('conversation_id', conversationIds)
+        .order('created_at', { ascending: false })
+
+    const lastMessageMap = new Map<string, typeof recentMessages extends (infer T)[] | null ? T : never>()
+    for (const msg of recentMessages ?? []) {
+        if (!lastMessageMap.has(msg.conversation_id)) {
+            lastMessageMap.set(msg.conversation_id, msg)
+        }
+    }
+
+    // Batch: непрочитанные сообщения — считаем из уже полученных данных
+    const lastReadMap = new Map(
+        participations.map(p => [p.conversation_id, p.last_read_at ?? '1970-01-01'])
+    )
+
+    const unreadCountMap = new Map<string, number>()
+    for (const msg of recentMessages ?? []) {
+        if (msg.sender_id === user.id) continue
+        const lastRead = lastReadMap.get(msg.conversation_id) ?? '1970-01-01'
+        if (msg.created_at > lastRead) {
+            unreadCountMap.set(msg.conversation_id, (unreadCountMap.get(msg.conversation_id) ?? 0) + 1)
+        }
+    }
+
+    // Собираем результат
+    const enriched = (conversations ?? []).map(conv => {
+        const partnerId = partnerIdMap.get(conv.id)
+        if (!partnerId) return null
+
+        const partner = profileMap.get(partnerId)
+        const lastMsg = lastMessageMap.get(conv.id)
+
+        return {
+            id: conv.id,
+            created_at: conv.created_at,
+            partner_id: partner?.id ?? null,
+            partner_name: partner?.name ?? 'Неизвестный',
+            partner_role: partner?.role ?? null,
+            partner_avatar: partner?.avatar_url ?? null,
+            last_message: lastMsg ? { content: lastMsg.content, created_at: lastMsg.created_at, sender_id: lastMsg.sender_id } : null,
+            unread_count: unreadCountMap.get(conv.id) ?? 0,
+        }
+    })
 
     // Убираем null и сортируем по последнему сообщению
     const result = enriched
@@ -127,17 +148,17 @@ export async function POST(req: Request) {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
 
     const { recipientId } = await req.json()
 
     if (!recipientId) {
-        return NextResponse.json({ error: 'recipientId is required' }, { status: 400 })
+        return NextResponse.json({ error: 'Не указан получатель' }, { status: 400 })
     }
 
     if (recipientId === user.id) {
-        return NextResponse.json({ error: 'Cannot message yourself' }, { status: 400 })
+        return NextResponse.json({ error: 'Нельзя отправить сообщение самому себе' }, { status: 400 })
     }
 
     // Ищем существующий диалог между этими двумя
@@ -172,7 +193,7 @@ export async function POST(req: Request) {
     const conv = convRows?.[0]
 
     if (!conv?.id) {
-        return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
+        return NextResponse.json({ error: 'Не удалось создать диалог' }, { status: 500 })
     }
 
     // Добавляем обоих участников

@@ -45,7 +45,7 @@ async function requireConversationAccess(conversationId: string) {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+    return { error: NextResponse.json({ error: "Не авторизован" }, { status: 401 }) };
   }
 
   const { data: access } = await supabase
@@ -56,7 +56,7 @@ async function requireConversationAccess(conversationId: string) {
     .single();
 
   if (!access) {
-    return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+    return { error: NextResponse.json({ error: "Доступ запрещён" }, { status: 403 }) };
   }
 
   return { user };
@@ -129,7 +129,7 @@ export async function POST(
   const { content } = await req.json();
 
   if (!content?.trim()) {
-    return NextResponse.json({ error: "Empty message" }, { status: 400 });
+    return NextResponse.json({ error: "Пустое сообщение" }, { status: 400 });
   }
 
   const { data: insertedRows, error: messageError } = await adminClient
@@ -149,7 +149,7 @@ export async function POST(
   const message = insertedRows?.[0] as MessageRow | undefined;
 
   if (!message) {
-    return NextResponse.json({ error: "Failed to create message" }, { status: 500 });
+    return NextResponse.json({ error: "Не удалось создать сообщение" }, { status: 500 });
   }
 
   await adminClient

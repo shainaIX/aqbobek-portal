@@ -4,20 +4,82 @@ import type { ComponentType } from "react";
 import { BookOpen, Calendar, Award, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { fetchSubjectSummaries, fetchStudentRecord } from "@/lib/ai-learning/database";
 import WelcomeBanner from "@/components/dashboard/student/WelcomeBanner";
 import AIRecommendations from "@/components/dashboard/student/AIRecommendations";
 import SchedulePreview from "@/components/dashboard/student/SchedulePreview";
 import SubjectProgress from "@/components/dashboard/student/SubjectProgress";
 
+interface DashboardStats {
+  gpa: number;
+  classRank: number;
+  totalStudents: number;
+  streak: number;
+  subjects: number;
+  lessonsToday: number;
+}
+
 export default function StudentDashboard() {
-  const stats = {
-    gpa: 4.8,
-    classRank: 5,
+  const { user } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    gpa: 0,
+    classRank: 0,
     totalStudents: 25,
-    streak: 12,
-    subjects: 14,
-    lessonsToday: 6,
-  };
+    streak: 0,
+    subjects: 0,
+    lessonsToday: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      if (!user?.id) return;
+
+      try {
+        // Load student data
+        const record = await fetchStudentRecord(user.id);
+        const summaries = await fetchSubjectSummaries(user.id);
+
+        if (record && record.topicPerformance.length > 0) {
+          // Calculate GPA from all grades
+          const allGrades = record.topicPerformance.flatMap((tp) => tp.gradeHistory);
+          const avgGrade = allGrades.reduce((sum, g) => sum + g.score, 0) / allGrades.length;
+
+          // Calculate streak (consecutive days with activity)
+          const uniqueDates = new Set(allGrades.map((g) => g.date));
+          const streak = uniqueDates.size;
+
+          setStats({
+            gpa: Math.round(avgGrade * 10) / 10,
+            classRank: 5, // Would need class ranking query
+            totalStudents: 25,
+            streak: Math.min(streak, 30), // Cap at 30 for display
+            subjects: summaries.filter((s) => s.grade > 0).length,
+            lessonsToday: allGrades.filter((g) => g.date === new Date().toISOString().split('T')[0]).length,
+          });
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadDashboardData();
+  }, [user?.id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-neutral-600">Загрузка данных...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -26,7 +88,7 @@ export default function StudentDashboard() {
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* AI Recommendations - 2/3 width */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -99,7 +161,7 @@ export default function StudentDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
       >
-        <SubjectProgress />
+        <SubjectProgress studentId={user?.id} />
       </motion.div>
     </div>
   );

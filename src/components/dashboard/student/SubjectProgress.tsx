@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus, BookOpen } from "lucide-react";
-import { getSubjectSummaries } from "@/lib/ai-learning/database";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { fetchSubjectSummaries } from "@/lib/ai-learning/database";
 import type { SubjectSummary } from "@/lib/ai-learning/types";
 
 interface SubjectProgressProps {
@@ -10,8 +12,35 @@ interface SubjectProgressProps {
   studentId?: string;
 }
 
-export default function SubjectProgress({ subjects, studentId = "1" }: SubjectProgressProps) {
-  const displaySubjects = subjects ?? getSubjectSummaries(studentId);
+export default function SubjectProgress({ subjects, studentId }: SubjectProgressProps) {
+  const { user } = useAuth();
+  const [displaySubjects, setDisplaySubjects] = useState<SubjectSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const effectiveStudentId = studentId || user?.id;
+
+  useEffect(() => {
+    if (subjects) {
+      setDisplaySubjects(subjects);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!effectiveStudentId) return;
+
+    async function loadData() {
+      try {
+        const summaries = await fetchSubjectSummaries(effectiveStudentId);
+        setDisplaySubjects(summaries);
+      } catch (error) {
+        console.error('Error loading subject summaries:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadData();
+  }, [subjects, effectiveStudentId]);
 
   const getGradeColor = (grade: number) => {
     switch (grade) {
@@ -36,13 +65,32 @@ export default function SubjectProgress({ subjects, studentId = "1" }: SubjectPr
     stable: Minus,
   };
 
-  const getTrendColor = (trend: string) => {
+  const getTrendColor = (trend: 'up' | 'down' | 'stable') => {
     switch (trend) {
       case 'up': return 'text-green-600';
       case 'down': return 'text-red-600';
       default: return 'text-neutral-400';
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center">
+        <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-neutral-600">Загрузка предметов...</p>
+      </div>
+    );
+  }
+
+  if (displaySubjects.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center">
+        <BookOpen className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+        <p className="text-neutral-600 font-medium">Нет данных по предметам</p>
+        <p className="text-sm text-neutral-500 mt-1">Оценки появятся здесь после сдачи работ</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -62,7 +110,7 @@ export default function SubjectProgress({ subjects, studentId = "1" }: SubjectPr
               Прогресс по предметам
             </h3>
             <p className="text-xs text-neutral-500">
-              Средняя успеваемость: 4.6
+              Средняя успеваемость: {(displaySubjects.reduce((s, sub) => s + sub.grade, 0) / displaySubjects.filter(s => s.grade > 0).length || 0).toFixed(1)}
             </p>
           </div>
         </div>
@@ -73,9 +121,9 @@ export default function SubjectProgress({ subjects, studentId = "1" }: SubjectPr
 
       {/* Subjects List */}
       <div className="p-5 space-y-4">
-        {displaySubjects.map((subject, index) => {
+        {displaySubjects.filter(s => s.grade > 0).map((subject, index) => {
           const Icon = TrendIcon[subject.trend];
-          
+
           return (
             <motion.div
               key={subject.id}
@@ -141,7 +189,7 @@ export default function SubjectProgress({ subjects, studentId = "1" }: SubjectPr
           </div>
           <div>
             <p className="text-2xl font-bold font-headline text-yellow-600">
-              {displaySubjects.filter(s => s.progress < 60).length}
+              {displaySubjects.filter(s => s.progress < 60 && s.grade > 0).length}
             </p>
             <p className="text-xs text-neutral-500 mt-1">Требует внимания</p>
           </div>

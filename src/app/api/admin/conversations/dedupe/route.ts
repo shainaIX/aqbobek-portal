@@ -20,7 +20,7 @@ async function requireAdmin() {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+    return { error: NextResponse.json({ error: "Не авторизован" }, { status: 401 }) };
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -30,7 +30,7 @@ async function requireAdmin() {
     .single();
 
   if (profileError || profile?.role !== "admin") {
-    return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+    return { error: NextResponse.json({ error: "Доступ запрещён" }, { status: 403 }) };
   }
 
   return { user };
