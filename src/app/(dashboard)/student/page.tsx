@@ -38,24 +38,23 @@ export default function StudentDashboard() {
       if (!user?.id) return;
 
       try {
-        // Load student data
+
         const record = await fetchStudentRecord(user.id);
         const summaries = await fetchSubjectSummaries(user.id);
 
         if (record && record.topicPerformance.length > 0) {
-          // Calculate GPA from all grades
+
           const allGrades = record.topicPerformance.flatMap((tp) => tp.gradeHistory);
           const avgGrade = allGrades.reduce((sum, g) => sum + g.score, 0) / allGrades.length;
 
-          // Calculate streak (consecutive days with activity)
           const uniqueDates = new Set(allGrades.map((g) => g.date));
           const streak = uniqueDates.size;
 
           setStats({
             gpa: Math.round(avgGrade * 10) / 10,
-            classRank: 5, // Would need class ranking query
+            classRank: 5,
             totalStudents: 25,
-            streak: Math.min(streak, 30), // Cap at 30 for display
+            streak: Math.min(streak, 30),
             subjects: summaries.filter((s) => s.grade > 0).length,
             lessonsToday: allGrades.filter((g) => g.date === new Date().toISOString().split('T')[0]).length,
           });
@@ -83,13 +82,11 @@ export default function StudentDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
+
       <WelcomeBanner stats={stats} />
 
-      {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* AI Recommendations - 2/3 width */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,7 +96,6 @@ export default function StudentDashboard() {
           <AIRecommendations limit={2} />
         </motion.div>
 
-        {/* Schedule Preview - 1/3 width */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,7 +106,6 @@ export default function StudentDashboard() {
         </motion.div>
       </div>
 
-      {/* Quick Access - 2x2 Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -155,7 +150,6 @@ export default function StudentDashboard() {
         </div>
       </motion.div>
 
-      {/* Subject Progress - Full Width */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -167,7 +161,6 @@ export default function StudentDashboard() {
   );
 }
 
-// Quick Access Card Component
 function QuickAccessCard({
   href,
   icon: Icon,

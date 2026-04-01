@@ -42,7 +42,7 @@ export default function TeacherClassesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,7 +68,6 @@ export default function TeacherClassesPage() {
         </div>
       </motion.div>
 
-      {/* Class Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {classes.map((cls) => (
           <button
@@ -85,7 +84,6 @@ export default function TeacherClassesPage() {
         ))}
       </div>
 
-      {/* Class Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {classes.filter(c => c.id === selectedClass).map((cls) => (
           <motion.div
@@ -133,7 +131,6 @@ export default function TeacherClassesPage() {
         ))}
       </div>
 
-      {/* Students Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

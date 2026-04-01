@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-// Базовый хук — вызывает fn каждые intervalMs миллисекунд
 export function usePolling(
     fn: () => void,
     intervalMs = 5000,
@@ -8,7 +7,6 @@ export function usePolling(
 ) {
     const savedFn = useRef(fn)
 
-    // Всегда держим актуальную версию функции
     useEffect(() => {
         savedFn.current = fn
     }, [fn])
@@ -16,7 +14,6 @@ export function usePolling(
     useEffect(() => {
         if (!enabled) return
 
-        // Сразу вызываем при монтировании
         savedFn.current()
 
         const id = setInterval(() => savedFn.current(), intervalMs)

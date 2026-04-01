@@ -2,10 +2,10 @@
 
 import type { ComponentType } from "react";
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Award, 
-  BookOpen, 
+import {
+  TrendingUp,
+  Award,
+  BookOpen,
   Calendar,
   Bell,
   Search,
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
+
       <header className="sticky top-0 z-50 glass border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -38,7 +38,7 @@ export default function DashboardPage() {
                   className="bg-transparent border-none outline-none text-sm w-64"
                 />
               </div>
-              
+
               <Button variant="ghost" size="sm" className="relative">
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-xs rounded-full flex items-center justify-center">
@@ -54,9 +54,8 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -68,7 +67,6 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             icon={TrendingUp}
@@ -104,11 +102,8 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* AI Insights */}
 
-          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -119,7 +114,7 @@ export default function DashboardPage() {
               <h3 className="heading-3">AI-Рекомендации</h3>
               <Button variant="outlined" size="sm">Все рекомендации</Button>
             </div>
-            
+
             <div className="space-y-4">
               <AIInsightCard
                 subject="Физика"
@@ -131,7 +126,7 @@ export default function DashboardPage() {
                   "Повторите формулы из главы 3"
                 ]}
               />
-              
+
               <AIInsightCard
                 subject="Алгебра"
                 probability={95}
@@ -144,7 +139,6 @@ export default function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* Schedule */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -155,7 +149,7 @@ export default function DashboardPage() {
               <h3 className="heading-3">Расписание</h3>
               <Button variant="ghost" size="sm">Сегодня</Button>
             </div>
-            
+
             <div className="space-y-3">
               <ScheduleItem
                 time="08:30 - 09:15"
@@ -191,20 +185,18 @@ export default function DashboardPage() {
   );
 }
 
-// Компоненты для дашборда
-
-function StatCard({ 
-  icon: Icon, 
-  title, 
-  value, 
-  trend, 
-  trendUp, 
-  color 
-}: { 
-  icon: ComponentType<{ className?: string }>; 
-  title: string; 
-  value: string; 
-  trend: string; 
+function StatCard({
+  icon: Icon,
+  title,
+  value,
+  trend,
+  trendUp,
+  color
+}: {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  value: string;
+  trend: string;
   trendUp: boolean;
   color: 'primary' | 'secondary' | 'tertiary';
 }) {
@@ -235,12 +227,12 @@ function StatCard({
   );
 }
 
-function AIInsightCard({ 
-  subject, 
-  probability, 
-  message, 
-  recommendations 
-}: { 
+function AIInsightCard({
+  subject,
+  probability,
+  message,
+  recommendations
+}: {
   subject: string;
   probability: number;
   message: string;
@@ -267,14 +259,14 @@ function AIInsightCard({
   );
 }
 
-function ScheduleItem({ 
-  time, 
-  subject, 
-  room, 
-  teacher, 
-  completed, 
-  current 
-}: { 
+function ScheduleItem({
+  time,
+  subject,
+  room,
+  teacher,
+  completed,
+  current
+}: {
   time: string;
   subject: string;
   room: string;
@@ -284,10 +276,10 @@ function ScheduleItem({
 }) {
   return (
     <div className={`p-3 rounded-lg border transition-all ${
-      current 
-        ? 'border-primary bg-primary/5 shadow-sm' 
-        : completed 
-          ? 'border-neutral-200 opacity-60' 
+      current
+        ? 'border-primary bg-primary/5 shadow-sm'
+        : completed
+          ? 'border-neutral-200 opacity-60'
           : 'border-neutral-200 hover:border-primary-300'
     }`}>
       <div className="flex items-center justify-between mb-1">

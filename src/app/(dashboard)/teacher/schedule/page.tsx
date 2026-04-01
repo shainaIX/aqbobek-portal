@@ -5,7 +5,7 @@ import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react
 
 export default function TeacherSchedulePage() {
   const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-  const currentDay = 2; // Среда
+  const currentDay = 2;
 
   const schedule = {
     "Пн": [
@@ -37,7 +37,7 @@ export default function TeacherSchedulePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,6 @@ export default function TeacherSchedulePage() {
         </div>
       </motion.div>
 
-      {/* Week Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {weekDays.map((day, index) => (
           <button
@@ -81,7 +80,6 @@ export default function TeacherSchedulePage() {
         ))}
       </div>
 
-      {/* Today's Schedule */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

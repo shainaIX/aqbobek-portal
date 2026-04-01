@@ -9,7 +9,7 @@ export default function SchedulePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -37,7 +37,6 @@ export default function SchedulePage() {
         </div>
       </motion.div>
 
-      {/* Week Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб"].map((day, index) => (
           <button
@@ -53,7 +52,6 @@ export default function SchedulePage() {
         ))}
       </div>
 
-      {/* Schedule */}
       <ScheduleList />
     </div>
   );

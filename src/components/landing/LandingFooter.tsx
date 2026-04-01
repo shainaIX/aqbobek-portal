@@ -45,7 +45,7 @@ export default function LandingFooter() {
         <footer className="bg-neutral-900 text-white">
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {/* Brand */}
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -64,7 +64,7 @@ export default function LandingFooter() {
                             Интеллектуальная образовательная платформа нового поколения
                             с AI-аналитикой и персональным подходом к каждому ученику.
                         </p>
-                        {/* Social Links */}
+
                         <div className="flex items-center gap-3">
                             {socialLinks.map((social, index) => {
                                 const Icon = social.icon;
@@ -87,7 +87,6 @@ export default function LandingFooter() {
                         </div>
                     </motion.div>
 
-                    {/* Quick Links */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +110,6 @@ export default function LandingFooter() {
                         </ul>
                     </motion.div>
 
-                    {/* Contact Info */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -144,7 +142,6 @@ export default function LandingFooter() {
                         </ul>
                     </motion.div>
 
-                    {/* Newsletter */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -173,7 +170,6 @@ export default function LandingFooter() {
                     </motion.div>
                 </div>
 
-                {/* Bottom Bar */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}

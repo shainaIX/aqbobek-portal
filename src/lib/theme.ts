@@ -1,4 +1,4 @@
-// Цветовая палитра из дизайн-системы
+
 export const colors = {
   primary: {
     DEFAULT: '#50C878',
@@ -60,7 +60,6 @@ export const colors = {
   },
 }
 
-// Типографика
 export const typography = {
   headline: {
     fontFamily: 'Space Grotesk',
@@ -91,33 +90,30 @@ export const typography = {
   },
 }
 
-// Размеры шрифтов
 export const fontSizes = {
-  xs: '0.75rem',     // 12px
-  sm: '0.875rem',    // 14px
-  base: '1rem',      // 16px
-  lg: '1.125rem',    // 18px
-  xl: '1.25rem',     // 20px
-  '2xl': '1.5rem',   // 24px
-  '3xl': '1.875rem', // 30px
-  '4xl': '2.25rem',  // 36px
-  '5xl': '3rem',     // 48px
-  '6xl': '3.75rem',  // 60px
+  xs: '0.75rem',
+  sm: '0.875rem',
+  base: '1rem',
+  lg: '1.125rem',
+  xl: '1.25rem',
+  '2xl': '1.5rem',
+  '3xl': '1.875rem',
+  '4xl': '2.25rem',
+  '5xl': '3rem',
+  '6xl': '3.75rem',
 }
 
-// Радиус скругления
 export const radius = {
   none: '0px',
-  sm: '0.25rem',    // 4px
-  DEFAULT: '0.5rem', // 8px
-  md: '0.75rem',    // 12px
-  lg: '1rem',       // 16px
-  xl: '1.5rem',     // 24px
-  '2xl': '2rem',    // 32px
+  sm: '0.25rem',
+  DEFAULT: '0.5rem',
+  md: '0.75rem',
+  lg: '1rem',
+  xl: '1.5rem',
+  '2xl': '2rem',
   full: '9999px',
 }
 
-// Тени
 export const shadows = {
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',

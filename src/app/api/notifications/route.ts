@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// GET /api/notifications?unread_only=true
 export async function GET(req: Request) {
     const supabase = await createClient()
 
@@ -33,7 +32,6 @@ export async function GET(req: Request) {
     return NextResponse.json(data ?? [])
 }
 
-// PATCH /api/notifications — пометить ВСЕ прочитанными
 export async function PATCH() {
     const supabase = await createClient()
 

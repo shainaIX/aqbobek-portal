@@ -1,7 +1,4 @@
-/**
- * Maps topic IDs to curated learning resources.
- * Fetches resources from Supabase first, falls back to auto-generated search URLs.
- */
+
 
 import type { Resource, ResourceType } from './types';
 import { createClient } from '@/lib/supabase/client';
@@ -16,9 +13,8 @@ const wikiRu = (article: string) =>
 
 const khanEn = (path: string) => `https://www.khanacademy.org${path}`;
 
-/** Pre-mapped resources per topicId (fallback for when Supabase is empty). */
 const resourceMap: ResourceMap = {
-  // ── Алгебра ──────────────────────────────────────────────────────────────
+
   algebra_quadratic: [
     { type: 'video', title: 'Квадратные уравнения — объяснение', url: ytSearch('квадратные уравнения объяснение 10 класс'), duration: '12 мин' },
     { type: 'video', title: 'Теорема Виета — примеры', url: ytSearch('теорема Виета квадратные уравнения'), duration: '8 мин' },
@@ -47,7 +43,6 @@ const resourceMap: ResourceMap = {
     { type: 'practice', title: 'Задачи на прогрессии', url: ytSearch('задачи на прогрессии ЕНТ решение') },
   ],
 
-  // ── Физика ───────────────────────────────────────────────────────────────
   physics_mechanics: [
     { type: 'video', title: 'Механика — кинематика и динамика', url: ytSearch('механика физика 10 класс кинематика'), duration: '22 мин' },
     { type: 'theory', title: 'Классическая механика — Википедия', url: wikiRu('Классическая_механика') },
@@ -75,7 +70,6 @@ const resourceMap: ResourceMap = {
     { type: 'practice', title: 'Задачи по электростатике', url: ytSearch('задачи электростатика физика решение') },
   ],
 
-  // ── Литература ────────────────────────────────────────────────────────────
   lit_analysis: [
     { type: 'video', title: 'Анализ литературного произведения', url: ytSearch('как анализировать литературное произведение'), duration: '12 мин' },
     { type: 'practice', title: 'Примеры анализа текстов', url: ytSearch('анализ произведения пример литература') },
@@ -95,7 +89,6 @@ const resourceMap: ResourceMap = {
     { type: 'theory', title: 'Романтизм — Википедия', url: wikiRu('Романтизм') },
   ],
 
-  // ── История ───────────────────────────────────────────────────────────────
   history_kz20: [
     { type: 'video', title: 'История Казахстана в XX веке', url: ytSearch('история Казахстана XX век советский период'), duration: '20 мин' },
     { type: 'theory', title: 'Казахстан в советский период — Википедия', url: wikiRu('Казахская_Советская_Социалистическая_Республика') },
@@ -117,7 +110,6 @@ const resourceMap: ResourceMap = {
     { type: 'theory', title: 'Новое время — Википедия', url: wikiRu('Новое_время') },
   ],
 
-  // ── Английский ────────────────────────────────────────────────────────────
   english_grammar: [
     { type: 'video', title: 'English Tenses — полный гайд', url: ytSearch('english tenses explained all 12 tenses'), duration: '25 мин' },
     { type: 'video', title: 'Conditionals 0 1 2 3', url: ytSearch('english conditionals 0 1 2 3 explained'), duration: '12 мин' },
@@ -137,7 +129,6 @@ const resourceMap: ResourceMap = {
     { type: 'practice', title: 'Word formation exercises', url: ytSearch('word formation english B2 exercises') },
   ],
 
-  // ── Химия ─────────────────────────────────────────────────────────────────
   chem_organic: [
     { type: 'video', title: 'Органическая химия — углеводороды', url: ytSearch('органическая химия углеводороды урок'), duration: '18 мин' },
     { type: 'video', title: 'Спирты и кислоты — реакции', url: ytSearch('спирты кислоты органическая химия реакции'), duration: '14 мин' },
@@ -162,15 +153,10 @@ const resourceMap: ResourceMap = {
   ],
 };
 
-/** Cache for Supabase resources */
 const resourcesCache = new Map<string, Resource[]>();
 
-/**
- * Fetch resources for a topic from Supabase.
- * Falls back to hardcoded map, then to auto-generated search links.
- */
 export async function fetchResourcesFromSupabase(topicId: string, topicName: string): Promise<Resource[]> {
-  // Check cache first
+
   if (resourcesCache.has(topicId)) {
     return resourcesCache.get(topicId)!;
   }
@@ -178,11 +164,10 @@ export async function fetchResourcesFromSupabase(topicId: string, topicName: str
   try {
     const supabase = createClient();
 
-    // Extract numeric topic ID from our format (topic_NNN)
     const numericId = parseInt(topicId.replace('topic_', ''), 10);
 
     if (isNaN(numericId)) {
-      // Invalid topic ID, use fallback
+
       return getFallbackResources(topicId, topicName);
     }
 
@@ -211,16 +196,13 @@ export async function fetchResourcesFromSupabase(topicId: string, topicName: str
     console.error('Error fetching resources:', err);
   }
 
-  // Fall back to hardcoded or auto-generated resources
   return getFallbackResources(topicId, topicName);
 }
 
-/** Get fallback resources (hardcoded map or auto-generated) */
 function getFallbackResources(topicId: string, topicName: string): Resource[] {
   const mapped = resourceMap[topicId];
   if (mapped && mapped.length > 0) return mapped;
 
-  // Auto-generate fallback resources
   return [
     {
       type: 'video',
@@ -241,20 +223,14 @@ function getFallbackResources(topicId: string, topicName: string): Resource[] {
   ];
 }
 
-/**
- * Synchronous version - uses cached data or hardcoded fallback.
- * For use in components that don't support async loading.
- */
 export function getResources(topicId: string, topicName: string): Resource[] {
-  // Check cache first
+
   const cached = resourcesCache.get(topicId);
   if (cached) return cached;
 
-  // Use hardcoded map or auto-generate
   const mapped = resourceMap[topicId];
   if (mapped && mapped.length > 0) return mapped;
 
-  // Auto-generate fallback resources
   return [
     {
       type: 'video',
@@ -275,7 +251,6 @@ export function getResources(topicId: string, topicName: string): Resource[] {
   ];
 }
 
-/** Count resources by type for display in cards. */
 export function countByType(resources: Resource[]) {
   return {
     videos: resources.filter((r) => r.type === 'video').length,

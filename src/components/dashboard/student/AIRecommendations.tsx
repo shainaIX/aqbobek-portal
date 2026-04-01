@@ -32,11 +32,11 @@ interface AIRecommendationsProps {
   limit?: number;
 }
 
-export default function AIRecommendations({ 
+export default function AIRecommendations({
   recommendations,
   limit
 }: AIRecommendationsProps) {
-  // Mock данные если не переданы
+
   const defaultRecommendations: Recommendation[] = [
     {
       id: '1',
@@ -117,7 +117,7 @@ export default function AIRecommendations({
       transition={{ duration: 0.5, delay: 0.3 }}
       className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
     >
-      {/* Header */}
+
       <div className="flex items-center justify-between p-5 border-b border-neutral-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
@@ -132,15 +132,14 @@ export default function AIRecommendations({
             </p>
           </div>
         </div>
-        <Link 
-          href="/student/ai" 
+        <Link
+          href="/student/ai"
           className="text-sm font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
         >
           Все рекомендации <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
-      {/* Recommendations List */}
       <div className="divide-y divide-neutral-100">
         {limitedRecommendations.map((rec, index) => (
           <motion.div
@@ -150,7 +149,7 @@ export default function AIRecommendations({
             transition={{ duration: 0.3, delay: index * 0.1 }}
             className={`p-5 ${getPriorityStyles(rec.priority)} hover:bg-neutral-50 transition-colors`}
           >
-            {/* Subject & Probability */}
+
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold font-headline text-lg ${
@@ -170,7 +169,6 @@ export default function AIRecommendations({
               </div>
             </div>
 
-            {/* Probability Bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-neutral-500">Уверенность AI</span>
@@ -190,7 +188,6 @@ export default function AIRecommendations({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="space-y-2 mb-4">
               {rec.actions.map((action, actionIndex) => {
                 const Icon = ActionIcon[action.icon];
@@ -228,7 +225,6 @@ export default function AIRecommendations({
               })}
             </div>
 
-            {/* Priority Indicator */}
             {rec.priority === 'high' && rec.deadline && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -244,7 +240,6 @@ export default function AIRecommendations({
         ))}
       </div>
 
-      {/* Footer */}
       <div className="p-4 bg-gradient-to-r from-purple-50 to-primary-50 border-t border-neutral-200">
         <div className="flex items-center gap-3">
           <TrendingUp className="w-5 h-5 text-primary-600" />

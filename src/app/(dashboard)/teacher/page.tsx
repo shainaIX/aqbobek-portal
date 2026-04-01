@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// Types
 interface ClassOverview {
     classId: string;
     className: string;
@@ -65,7 +64,6 @@ interface UpcomingEvent {
 export default function TeacherDashboard() {
     const [selectedClass, setSelectedClass] = useState<string>('all');
 
-    // Mock Data (потом API)
     const classes: ClassOverview[] = [
         { classId: '10a', className: '10"А"', students: 25, avgGpa: 4.2, attendance: 94, trend: 'up' },
         { classId: '10b', className: '10"Б"', students: 23, avgGpa: 3.9, attendance: 91, trend: 'down' },
@@ -108,7 +106,7 @@ export default function TeacherDashboard() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -140,7 +138,6 @@ export default function TeacherDashboard() {
                 </div>
             </motion.div>
 
-            {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -212,11 +209,10 @@ export default function TeacherDashboard() {
                 </motion.div>
             </div>
 
-            {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Schedule & Classes */}
+
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Today's Schedule */}
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -256,12 +252,12 @@ export default function TeacherDashboard() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                                lesson.completed 
-                                                    ? 'bg-green-100' 
+                                                lesson.completed
+                                                    ? 'bg-green-100'
                                                     : 'bg-secondary-100'
                                             }`}>
-                                                {lesson.completed 
-                                                    ? <CheckCircle className="w-5 h-5 text-green-600" /> 
+                                                {lesson.completed
+                                                    ? <CheckCircle className="w-5 h-5 text-green-600" />
                                                     : <Clock className="w-5 h-5 text-secondary-600" />
                                                 }
                                             </div>
@@ -290,7 +286,6 @@ export default function TeacherDashboard() {
                         </div>
                     </motion.div>
 
-                    {/* Classes Overview */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -317,7 +312,7 @@ export default function TeacherDashboard() {
                         </div>
 
                         <div className="p-4">
-                            {/* Class Filter */}
+
                             <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                                 <button
                                     onClick={() => setSelectedClass('all')}
@@ -344,7 +339,6 @@ export default function TeacherDashboard() {
                                 ))}
                             </div>
 
-                            {/* Classes Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {classes
                                     .filter(c => selectedClass === 'all' || c.classId === selectedClass)
@@ -371,7 +365,7 @@ export default function TeacherDashboard() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="space-y-2">
                                                 <div className="flex items-center justify-between text-sm">
                                                     <span className="text-neutral-600">Учеников</span>
@@ -386,7 +380,7 @@ export default function TeacherDashboard() {
                                                     <span className="font-bold text-neutral-900">{cls.attendance}%</span>
                                                 </div>
                                                 <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden mt-2">
-                                                    <div 
+                                                    <div
                                                         className={`h-full rounded-full ${
                                                             cls.avgGpa >= 4 ? 'bg-green-500' :
                                                             cls.avgGpa >= 3.5 ? 'bg-yellow-500' :
@@ -404,9 +398,8 @@ export default function TeacherDashboard() {
                     </motion.div>
                 </div>
 
-                {/* Right Column - Risks, Activity, Events */}
                 <div className="space-y-6">
-                    {/* Early Warning Preview */}
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -463,7 +456,6 @@ export default function TeacherDashboard() {
                         </div>
                     </motion.div>
 
-                    {/* Recent Activity */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -507,7 +499,6 @@ export default function TeacherDashboard() {
                         </div>
                     </motion.div>
 
-                    {/* Upcoming Events */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

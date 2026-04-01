@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Users,
   Award,
   Calendar,
   Download
@@ -32,7 +32,7 @@ export default function AdminAnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,7 +52,6 @@ export default function AdminAnalyticsPage() {
         </button>
       </motion.div>
 
-      {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -116,7 +115,6 @@ export default function AdminAnalyticsPage() {
         </motion.div>
       </div>
 
-      {/* Grade Performance */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,7 +141,7 @@ export default function AdminAnalyticsPage() {
                   <p className="font-bold text-neutral-900">{grade.grade}</p>
                   <p className="text-xs text-neutral-500">класс</p>
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm text-neutral-600">{grade.students} учеников</span>
@@ -167,7 +165,6 @@ export default function AdminAnalyticsPage() {
         </div>
       </motion.div>
 
-      {/* Subject Performance */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

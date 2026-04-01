@@ -74,7 +74,7 @@ export default function AchievementsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -87,7 +87,6 @@ export default function AchievementsPage() {
         </p>
       </motion.div>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-neutral-200 p-4 text-center">
           <p className="text-3xl font-bold font-headline text-primary-600">
@@ -109,11 +108,10 @@ export default function AchievementsPage() {
         </div>
       </div>
 
-      {/* Achievements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {achievements.map((achievement, index) => {
           const Icon = achievement.icon;
-          
+
           return (
             <motion.div
               key={achievement.id}
@@ -131,7 +129,7 @@ export default function AchievementsPage() {
               }`}>
                 <Icon className="w-8 h-8 text-white" />
               </div>
-              
+
               <h3 className="font-headline text-lg font-semibold text-neutral-900 mb-2">
                 {achievement.title}
               </h3>

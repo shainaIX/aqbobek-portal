@@ -14,7 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
-  
+
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import React, { useState } from "react";
@@ -62,10 +62,10 @@ export default function Sidebar() {
       badge: 3,
     },
     {
-      icon: MessageSquare,  // ← ДОБАВИТЬ
-      label: "Сообщения",   // ← ДОБАВИТЬ
-      href: "/student/messages",  // ← ДОБАВИТЬ
-      badge: 3,  // ← ДОБАВИТЬ (количество новых сообщений)
+      icon: MessageSquare,
+      label: "Сообщения",
+      href: "/student/messages",
+      badge: 3,
     },
     {
       icon: User,
@@ -76,7 +76,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar */}
+
       <motion.aside
         initial={{ x: -280 }}
         animate={{ x: 0 }}
@@ -85,7 +85,7 @@ export default function Sidebar() {
           isCollapsed ? "w-20" : "w-64"
         } transition-all duration-300`}
       >
-        {/* Logo */}
+
         <div className="flex items-center justify-between h-16 px-4 border-b border-neutral-200">
           {!isCollapsed && (
             <div className="flex items-center gap-2">
@@ -109,7 +109,6 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item, index) => {
             const Icon = item.icon;
@@ -131,7 +130,7 @@ export default function Sidebar() {
                 <Icon className={`w-5 h-5 flex-shrink-0 ${
                   isActive ? "text-white" : "text-neutral-600"
                 }`} />
-                
+
                 {!isCollapsed && (
                   <>
                     <span className="text-sm font-medium flex-1">{item.label}</span>
@@ -143,7 +142,6 @@ export default function Sidebar() {
                   </>
                 )}
 
-                {/* Tooltip when collapsed */}
                 {isCollapsed && (
                   <div className="absolute left-full ml-2 px-3 py-1.5 bg-neutral-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
                     {item.label}
@@ -155,7 +153,6 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* User Profile */}
         {!isCollapsed && (
           <div className="p-4 border-t border-neutral-200">
             <div className="flex items-center gap-3 mb-3">
@@ -188,7 +185,6 @@ export default function Sidebar() {
         )}
       </motion.aside>
 
-      {/* Mobile Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-50 safe-area-pb">
         <div className="grid grid-cols-5">
           {navItems.map((item) => {

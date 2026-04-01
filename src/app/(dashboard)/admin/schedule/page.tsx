@@ -44,7 +44,7 @@ export default function AdminSchedulePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -70,7 +70,6 @@ export default function AdminSchedulePage() {
         </div>
       </motion.div>
 
-      {/* Conflicts Alert */}
       {scheduleConflicts.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -108,7 +107,6 @@ export default function AdminSchedulePage() {
         </motion.div>
       )}
 
-      {/* Schedule Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -167,7 +165,6 @@ export default function AdminSchedulePage() {
         </motion.div>
       </div>
 
-      {/* Week Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб"].map((day, index) => (
           <button
@@ -183,7 +180,6 @@ export default function AdminSchedulePage() {
         ))}
       </div>
 
-      {/* Schedule Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

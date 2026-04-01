@@ -63,7 +63,7 @@ export default function Header() {
                   placeholder="Поиск уроков, оценок..."
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-neutral-100 rounded-lg border-2 border-transparent 
+                  className="w-full pl-10 pr-4 py-2.5 bg-neutral-100 rounded-lg border-2 border-transparent
                            focus:border-primary-500 focus:bg-white focus:outline-none transition-all text-sm"
                 />
               </motion.div>
@@ -73,7 +73,6 @@ export default function Header() {
               <button className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg">
                 <Search className="w-5 h-5 text-neutral-700" />
               </button>
-
 
               <div className="relative">
                 <motion.button

@@ -174,7 +174,6 @@ export default function TopicDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header with back button */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -212,7 +211,6 @@ export default function TopicDetailPage() {
         </div>
       </motion.div>
 
-      {/* Progress Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -261,7 +259,6 @@ export default function TopicDetailPage() {
             </div>
           </div>
         </div>
-        {/* Progress bar */}
         <div className="mt-4 h-3 bg-neutral-200 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
@@ -272,7 +269,6 @@ export default function TopicDetailPage() {
         </div>
       </motion.div>
 
-      {/* Stats row */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -309,7 +305,6 @@ export default function TopicDetailPage() {
         </div>
       </motion.div>
 
-      {/* Signals */}
       {card.signals.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -334,7 +329,6 @@ export default function TopicDetailPage() {
         </motion.div>
       )}
 
-      {/* Subtopics */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -354,7 +348,6 @@ export default function TopicDetailPage() {
         </div>
       </motion.div>
 
-      {/* Resources sections with expand/collapse */}
       <AnimatePresence>
         {resourceGroups.video.length > 0 && (
           <motion.div
@@ -531,7 +524,6 @@ export default function TopicDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Complete button */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -564,7 +556,6 @@ export default function TopicDetailPage() {
   );
 }
 
-// Resource Item Component
 function ResourceItem({
   resource,
   isCompleted,

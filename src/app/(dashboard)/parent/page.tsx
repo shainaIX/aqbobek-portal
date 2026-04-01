@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
+import {
   TrendingUp,
   Calendar,
   MessageSquare,
@@ -12,10 +12,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-// Child Selector Component
 function ChildSelector() {
   const [selectedChild, setSelectedChild] = useState(0);
-  
+
   const children = [
     { id: 1, name: "Алишер Иманалиев", class: "10\"А\"", avatar: "АИ" },
     { id: 2, name: "Амина Иманалиева", class: "8\"Б\"", avatar: "АИ" },
@@ -59,7 +58,6 @@ function ChildSelector() {
   );
 }
 
-// AI Weekly Summary Component
 function AIWeeklySummary() {
   return (
     <motion.div
@@ -109,7 +107,6 @@ function AIWeeklySummary() {
   );
 }
 
-// Quick Stats Component
 function QuickStats() {
   const stats = [
     { icon: TrendingUp, label: "Средний балл", value: "4.6", trend: "+0.2", color: "text-green-600" },
@@ -145,7 +142,6 @@ function QuickStats() {
   );
 }
 
-// Recent Grades Component
 function RecentGrades() {
   const grades = [
     { subject: "Алгебра", topic: "Квадратные уравнения", grade: 5, date: "24.01" },
@@ -204,7 +200,6 @@ function RecentGrades() {
   );
 }
 
-// Attendance Alert Component
 function AttendanceAlert() {
   return (
     <motion.div
@@ -230,7 +225,7 @@ function AttendanceAlert() {
           const day = i + 1;
           const isAbsent = [15, 22].includes(day);
           const isToday = day === 26;
-          
+
           return (
             <div
               key={i}
@@ -267,7 +262,6 @@ function AttendanceAlert() {
   );
 }
 
-// Messages Preview Component
 function MessagesPreview() {
   const messages = [
     {
@@ -342,11 +336,10 @@ function MessagesPreview() {
   );
 }
 
-// Main Page Component
 export default function ParentDashboard() {
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -359,25 +352,19 @@ export default function ParentDashboard() {
         </p>
       </motion.div>
 
-      {/* Child Selector */}
       <ChildSelector />
 
-      {/* AI Weekly Summary */}
       <AIWeeklySummary />
 
-      {/* Quick Stats */}
       <QuickStats />
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Grades */}
+
         <RecentGrades />
-        
-        {/* Attendance */}
+
         <AttendanceAlert />
       </div>
 
-      {/* Messages */}
       <MessagesPreview />
     </div>
   );

@@ -28,10 +28,9 @@ export interface Conversation {
     lastMessageTime: Date;
     unreadCount: number;
     isOnline: boolean;
-    subject?: string; // Для связи с учителем по предмету
+    subject?: string;
 }
 
-// Mock conversations для ученика
 export const studentConversations: Conversation[] = [
     {
         id: '1',
@@ -81,7 +80,6 @@ export const studentConversations: Conversation[] = [
     },
 ];
 
-// Mock messages для выбранной конверсации
 export const mockMessages: Record<string, Message[]> = {
     '1': [
         {

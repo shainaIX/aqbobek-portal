@@ -1,6 +1,5 @@
 import { StudentGrade, AttendanceRecord } from './riskCalculator';
 
-// Генерация тестовых оценок
 export function generateMockGrades(
     studentId: string,
     scenario: 'excellent' | 'good' | 'declining' | 'critical'
@@ -29,7 +28,7 @@ export function generateMockGrades(
                 subjectName: subject.name,
                 grade,
                 date: new Date(Date.now() - idx * 7 * 24 * 60 * 60 * 1000),
-                weight: idx === 0 ? 2.0 : 1.0, // Первая оценка - контрольная
+                weight: idx === 0 ? 2.0 : 1.0,
             }))
         );
     };
@@ -40,7 +39,6 @@ export function generateMockGrades(
     };
 }
 
-// Генерация тестовой посещаемости
 export function generateMockAttendance(
     scenario: 'excellent' | 'good' | 'poor' | 'critical'
 ): AttendanceRecord[] {
@@ -69,7 +67,6 @@ export function generateMockAttendance(
     return records;
 }
 
-// Примеры учеников для тестирования
 export const mockStudents = [
     {
         id: 's1',

@@ -53,7 +53,7 @@ export default function AdminNotificationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -73,7 +73,6 @@ export default function AdminNotificationsPage() {
         </button>
       </motion.div>
 
-      {/* Create Notification Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -91,7 +90,7 @@ export default function AdminNotificationsPage() {
             <p className="text-purple-100 text-sm mb-4">
               Отправьте сообщение выбранным пользователям
             </p>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <select className="px-4 py-2.5 bg-white/20 text-white rounded-lg border border-white/30 text-sm focus:outline-none focus:border-white">
                 <option value="general">Общее</option>
@@ -99,7 +98,7 @@ export default function AdminNotificationsPage() {
                 <option value="event">Мероприятие</option>
                 <option value="system">Системное</option>
               </select>
-              
+
               <select className="px-4 py-2.5 bg-white/20 text-white rounded-lg border border-white/30 text-sm focus:outline-none focus:border-white">
                 <option>Все пользователи</option>
                 <option>Только ученики</option>
@@ -130,7 +129,6 @@ export default function AdminNotificationsPage() {
         </div>
       </motion.div>
 
-      {/* Notifications List */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

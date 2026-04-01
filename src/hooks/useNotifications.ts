@@ -31,19 +31,16 @@ export function useNotifications() {
         }
     }, [])
 
-    // Polling каждые 15 секунд — достаточно для бейджа
     usePolling(fetchNotifications, 15000)
 
-    // Пометить все прочитанными
     const markAllRead = useCallback(async () => {
-        // Оптимистично сбрасываем счётчик
+
         setUnreadCount(0)
         setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
 
         await fetch('/api/notifications', { method: 'PATCH' })
     }, [])
 
-    // Пометить одно прочитанным
     const markOneRead = useCallback(async (id: string) => {
         setNotifications(prev =>
             prev.map(n => n.id === id ? { ...n, is_read: true } : n)

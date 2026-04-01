@@ -50,7 +50,7 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,7 +63,6 @@ export default function MessagesPage() {
         </p>
       </motion.div>
 
-      {/* Messages Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,9 +70,9 @@ export default function MessagesPage() {
         className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
       >
         <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[600px]">
-          {/* Conversations List */}
+
           <div className="border-r border-neutral-200">
-            {/* Search */}
+
             <div className="p-4 border-b border-neutral-200">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -85,7 +84,6 @@ export default function MessagesPage() {
               </div>
             </div>
 
-            {/* Conversations */}
             <div className="divide-y divide-neutral-100 max-h-[500px] overflow-y-auto">
               {conversations.map((conv, index) => (
                 <motion.button
@@ -121,11 +119,10 @@ export default function MessagesPage() {
             </div>
           </div>
 
-          {/* Message Content */}
           <div className="lg:col-span-2 flex flex-col">
             {selectedMessage !== null && conversations[selectedMessage] && (
               <>
-                {/* Message Header */}
+
                 <div className="p-4 border-b border-neutral-200 flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-tertiary-400 to-tertiary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                     {conversations[selectedMessage].avatar}
@@ -136,7 +133,6 @@ export default function MessagesPage() {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <div className="flex-1 p-4 space-y-4 overflow-y-auto">
                   {conversations[selectedMessage].messages.map((msg, index) => (
                     <motion.div
@@ -160,7 +156,6 @@ export default function MessagesPage() {
                   ))}
                 </div>
 
-                {/* Reply Input */}
                 <div className="p-4 border-t border-neutral-200">
                   <div className="flex items-center gap-2">
                     <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">

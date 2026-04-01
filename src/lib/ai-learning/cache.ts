@@ -1,18 +1,10 @@
-/**
- * AI Analysis Cache – Supabase-backed caching layer.
- *
- * Caches AI analysis results with:
- * - 24-hour TTL
- * - Grades hash invalidation (cache miss if grades changed)
- * - Server-side invalidation on demand
- */
+
 
 import { createClient } from '@/lib/supabase/client';
 import { createHash } from 'crypto';
 import type { AIAnalysisResult, CachedAnalysis } from './types';
 import type { GradeEntry } from './types';
 
-/** Generate hash of grades for invalidation checks */
 export function generateGradesHash(grades: GradeEntry[]): string {
   const gradeData = grades
     .map((g) => `${g.topicId}:${g.score}:${g.date}:${g.type}`)
@@ -20,7 +12,6 @@ export function generateGradesHash(grades: GradeEntry[]): string {
   return createHash('sha256').update(gradeData).digest('hex');
 }
 
-/** Fetch cached analysis from Supabase */
 export async function getCachedAnalysis(
   studentId: string,
   gradesHash: string,
@@ -37,20 +28,17 @@ export async function getCachedAnalysis(
     return null;
   }
 
-  // Check hash match
   if (data.gradesHash !== gradesHash) {
-    return null; // Grades changed, cache invalid
+    return null;
   }
 
-  // Check TTL
   if (new Date(data.expiresAt) < new Date()) {
-    return null; // Cache expired
+    return null;
   }
 
   return data.analysis as AIAnalysisResult;
 }
 
-/** Store analysis in cache */
 export async function setCachedAnalysis(
   studentId: string,
   analysis: AIAnalysisResult,
@@ -59,7 +47,7 @@ export async function setCachedAnalysis(
   const supabase = createClient();
 
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +24h
+  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   await supabase
     .from('ai_analysis_cache')
@@ -72,7 +60,6 @@ export async function setCachedAnalysis(
     });
 }
 
-/** Invalidate cache for a student */
 export async function invalidateCache(studentId: string): Promise<void> {
   const supabase = createClient();
 

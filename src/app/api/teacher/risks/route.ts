@@ -7,20 +7,16 @@ import { mockStudents, generateMockGrades, generateMockAttendance } from '@/lib/
 
 export async function GET() {
     try {
-        // В реальном проекте здесь будет запрос к базе данных
-        // Сейчас используем mock данные
 
         const studentsAtRisk = mockStudents.map(student => {
             const grades = generateMockGrades(student.id, student.scenario.grades);
             const attendance = generateMockAttendance(student.scenario.attendance);
 
-            // Рассчитываем среднюю оценку
             const allGrades = [...grades.recent, ...grades.previous];
             const averageGrade = allGrades.length > 0
                 ? allGrades.reduce((sum, g) => sum + g.grade, 0) / allGrades.length
                 : 0;
 
-            // Группируем оценки по предметам
             const subjectGrades: Record<string, StudentGrade[]> = {};
             for (const grade of allGrades) {
                 if (!subjectGrades[grade.subjectId]) {
@@ -29,7 +25,6 @@ export async function GET() {
                 subjectGrades[grade.subjectId].push(grade);
             }
 
-            // Рассчитываем риск
             const riskProfile = calculateStudentRisk({
                 studentId: student.id,
                 studentName: student.name,
@@ -47,7 +42,6 @@ export async function GET() {
             return riskProfile;
         });
 
-        // Сортируем по уровню риска
         const sortedByRisk = studentsAtRisk.sort((a, b) => b.riskScore - a.riskScore);
 
         return NextResponse.json({

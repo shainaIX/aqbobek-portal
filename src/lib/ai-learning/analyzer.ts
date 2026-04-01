@@ -1,12 +1,8 @@
-/**
- * Weakness detection engine.
- * Reads student performance data from Supabase and produces a sorted list of WeakTopic objects.
- */
+
 
 import type { WeakTopic } from './types';
 import { getStudentRecord, getSubjectById, fetchStudentRecord, fetchSubjects } from './database';
 
-// ─── Scoring weights (must sum to 1.0) ────────────────────────────────────────
 const W = {
   gradeAverage: 0.40,
   gradeTrend: 0.30,
@@ -14,10 +10,8 @@ const W = {
   examScore: 0.10,
 };
 
-/** Map a raw average grade (1–5 or 0–100 percentage) to a risk score (0–100). */
 function gradeToRisk(avg: number): number {
-  // Convert percentage (0-100) to 5-point scale (1-5)
-  // Assuming 100% = 5, 80% = 4, 60% = 3, 40% = 2, 20% = 1
+
   const gradeOnFiveScale = avg > 5 ? (avg / 100) * 5 : avg;
 
   if (gradeOnFiveScale >= 4.5) return 0;
@@ -28,7 +22,6 @@ function gradeToRisk(avg: number): number {
   return 100;
 }
 
-/** Map an attendance percentage (0–100) to a risk score (0–100). */
 function attendanceToRisk(rate: number): number {
   if (rate >= 95) return 0;
   if (rate >= 85) return 20;
@@ -37,9 +30,8 @@ function attendanceToRisk(rate: number): number {
   return 100;
 }
 
-/** Map a last-exam score percentage (0–100) to a risk score (0–100). */
 function examToRisk(score: number | null): number {
-  if (score === null) return 0; // no data — don't penalise
+  if (score === null) return 0;
   if (score >= 85) return 0;
   if (score >= 70) return 20;
   if (score >= 55) return 50;
@@ -47,11 +39,6 @@ function examToRisk(score: number | null): number {
   return 100;
 }
 
-/**
- * Compute grade trend risk.
- * Compares last-2 grades vs previous-2 grades of the topic.
- * Returns both a risk score and a human-readable trend label.
- */
 function gradeTrendRisk(sortedScores: number[]): {
   score: number;
   trend: 'improving' | 'stable' | 'declining';
@@ -75,7 +62,6 @@ function gradeTrendRisk(sortedScores: number[]): {
   return { score: 90, trend: 'declining' };
 }
 
-/** Derive human-readable signal strings from the performance data. */
 function buildSignals(
   avgGrade: number,
   attendanceRate: number,
@@ -84,7 +70,6 @@ function buildSignals(
 ): string[] {
   const signals: string[] = [];
 
-  // Convert percentage to 5-point scale for display
   const gradeOnFiveScale = avgGrade > 5 ? (avgGrade / 100) * 5 : avgGrade;
 
   if (gradeOnFiveScale < 3.0) signals.push(`Средняя оценка: ${gradeOnFiveScale.toFixed(1)} — критично`);
@@ -107,7 +92,6 @@ function buildSignals(
   return signals;
 }
 
-/** Classify weakness score → priority label. */
 function scoreToPriority(
   score: number,
 ): 'critical' | 'high' | 'medium' | 'low' {
@@ -117,27 +101,14 @@ function scoreToPriority(
   return 'low';
 }
 
-/**
- * Analyse a student and return their weak topics sorted by weakness score.
- * Only topics with weaknessScore > 15 are included (everything else is fine).
- *
- * @param studentId - The student ID to analyze
- * @param useCached - If true, uses cached data only (faster but may be stale)
- */
 export function analyzeStudent(studentId: string, useCached = false): WeakTopic[] {
   if (useCached) {
     return analyzeStudentSync(studentId);
   }
 
-  // For async analysis, we need to ensure data is loaded first
-  // This is handled by the caller via fetchStudentRecord
   return analyzeStudentSync(studentId);
 }
 
-/**
- * Synchronous analysis using cached data.
- * Call fetchStudentRecord first to ensure data is loaded.
- */
 function analyzeStudentSync(studentId: string): WeakTopic[] {
   const record = getStudentRecord(studentId);
   if (!record) return [];
@@ -164,10 +135,8 @@ function analyzeStudentSync(studentId: string): WeakTopic[] {
         examToRisk(tp.lastExamScore) * W.examScore,
     );
 
-    // Skip topics that are performing well
     if (weaknessScore <= 15) continue;
 
-    // Convert percentage to 5-point scale for avgGrade
     const avgGradeOnFiveScale = avgGrade > 5 ? (avgGrade / 100) * 5 : avgGrade;
 
     weakTopics.push({
@@ -187,13 +156,9 @@ function analyzeStudentSync(studentId: string): WeakTopic[] {
     });
   }
 
-  // Sort: highest weakness first
   return weakTopics.sort((a, b) => b.weaknessScore - a.weaknessScore);
 }
 
-/**
- * Async version that ensures data is loaded before analysis.
- */
 export async function analyzeStudentAsync(studentId: string): Promise<WeakTopic[]> {
   await fetchStudentRecord(studentId);
   await fetchSubjects();

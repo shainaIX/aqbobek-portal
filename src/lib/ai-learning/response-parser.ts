@@ -1,16 +1,8 @@
-/**
- * Response Parser – Validates and parses Groq AI responses.
- *
- * Handles:
- * - JSON extraction from markdown/plain text
- * - Schema validation with fallbacks
- * - Graceful degradation on missing fields
- */
+
 
 import { z } from 'zod';
 import type { AIAnalysisResult } from './types';
 
-// Zod schemas for strict validation
 const ResourceSchema = z.object({
   type: z.enum(['video', 'theory', 'practice']),
   title: z.string(),
@@ -49,19 +41,17 @@ const AnalysisResultSchema = z.object({
   analysisTimestamp: z.string(),
 });
 
-/** Extract JSON object from text (handles markdown code blocks) */
 function extractJSON(text: string): unknown {
-  // Try to find JSON in markdown code block
+
   const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (jsonMatch) {
     try {
       return JSON.parse(jsonMatch[1]);
     } catch {
-      // Fall through to full text parsing
+
     }
   }
 
-  // Try parsing full text as JSON
   try {
     return JSON.parse(text);
   } catch {
@@ -69,7 +59,6 @@ function extractJSON(text: string): unknown {
   }
 }
 
-/** Parse and validate AI response */
 export async function parseAnalysisResponse(
   responseText: string,
 ): Promise<AIAnalysisResult | null> {
@@ -81,7 +70,6 @@ export async function parseAnalysisResponse(
       return null;
     }
 
-    // Validate against schema
     const validated = AnalysisResultSchema.parse(extracted);
     return validated as AIAnalysisResult;
   } catch (error) {
@@ -90,7 +78,6 @@ export async function parseAnalysisResponse(
   }
 }
 
-/** Ensure all training cards have required fields, with sensible defaults */
 export function sanitizeAnalysisResult(
   result: AIAnalysisResult,
 ): AIAnalysisResult {
@@ -110,10 +97,10 @@ export function sanitizeAnalysisResult(
           ? card.gradeTrend
           : 'stable',
         resources: card.resources.filter((r) => r.searchQuery && r.title),
-        signals: card.signals.slice(0, 3), // Limit to 3 signals
+        signals: card.signals.slice(0, 3),
       }))
       .sort((a, b) => {
-        // Sort by priority
+
         const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
         return priorityOrder[a.priority] - priorityOrder[b.priority];
       }),

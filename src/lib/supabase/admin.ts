@@ -1,4 +1,4 @@
-// lib/supabase/admin.ts  ← для серверных операций БЕЗ RLS (миграции, createNotification и т.д.)
+
 import { createClient } from '@supabase/supabase-js'
 
 export const adminClient = createClient(

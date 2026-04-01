@@ -45,7 +45,7 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,7 +58,6 @@ export default function AttendancePage() {
         </p>
       </motion.div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -102,7 +101,6 @@ export default function AttendancePage() {
         </motion.div>
       </div>
 
-      {/* Alert */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -118,7 +116,6 @@ export default function AttendancePage() {
         </div>
       </motion.div>
 
-      {/* Attendance List */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

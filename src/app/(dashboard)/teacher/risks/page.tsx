@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-// Types
 interface AtRiskStudent {
   id: number;
   name: string;
@@ -53,7 +52,6 @@ interface AtRiskStudent {
   recommendations: string[];
 }
 
-// Mock Data
 const atRiskStudents: AtRiskStudent[] = [
   {
     id: 1,
@@ -175,7 +173,6 @@ const atRiskStudents: AtRiskStudent[] = [
   },
 ];
 
-// Risk Level Badge Component
 function RiskLevelBadge({ level }: { level: string }) {
   const config = {
     high: { color: "bg-red-100 text-red-700 border-red-300", label: "Высокий риск" },
@@ -190,7 +187,6 @@ function RiskLevelBadge({ level }: { level: string }) {
   );
 }
 
-// Risk Category Badge Component
 function RiskCategoryBadge({ category, active }: { category: string; active: boolean }) {
   const config = {
     academic: { icon: BookOpen, label: "Успеваемость" },
@@ -208,7 +204,6 @@ function RiskCategoryBadge({ category, active }: { category: string; active: boo
   );
 }
 
-// Expandable Threats & Recommendations Panel
 function ExpandedInsights({ student }: { student: AtRiskStudent }) {
   return (
       <motion.div
@@ -219,7 +214,7 @@ function ExpandedInsights({ student }: { student: AtRiskStudent }) {
           className="overflow-hidden"
       >
         <div className="px-4 pb-4 border-t border-neutral-100 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Threats */}
+
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center">
@@ -243,7 +238,6 @@ function ExpandedInsights({ student }: { student: AtRiskStudent }) {
             </ul>
           </div>
 
-          {/* Recommendations */}
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -273,7 +267,6 @@ function ExpandedInsights({ student }: { student: AtRiskStudent }) {
   );
 }
 
-// Student Detail Modal Component
 function StudentDetailModal({
                               student,
                               onClose,
@@ -297,7 +290,7 @@ function StudentDetailModal({
               onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
-            {/* Header */}
+
             <div className="sticky top-0 bg-white border-b border-neutral-200 p-5 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-neutral-300 to-neutral-400 rounded-full flex items-center justify-center text-white text-xl font-bold">
@@ -313,7 +306,6 @@ function StudentDetailModal({
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-5 space-y-6">
               <div className="flex items-center justify-between">
                 <RiskLevelBadge level={student.riskLevel} />
@@ -372,7 +364,6 @@ function StudentDetailModal({
                 </div>
               </div>
 
-              {/* Threats & Recommendations in modal */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
@@ -478,7 +469,6 @@ function StudentDetailModal({
   );
 }
 
-// Main Page Component
 export default function TeacherRisksPage() {
   const [selectedStudent, setSelectedStudent] = useState<AtRiskStudent | null>(null);
   const [expandedStudentId, setExpandedStudentId] = useState<number | null>(null);
@@ -507,7 +497,7 @@ export default function TeacherRisksPage() {
 
   return (
       <div className="space-y-6">
-        {/* Header */}
+
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -523,7 +513,6 @@ export default function TeacherRisksPage() {
           </button>
         </motion.div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { icon: AlertTriangle, color: "neutral", label: "Всего", value: stats.total, sub: "учеников в риске" },
@@ -569,7 +558,6 @@ export default function TeacherRisksPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -618,7 +606,6 @@ export default function TeacherRisksPage() {
           </div>
         </motion.div>
 
-        {/* Students List */}
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -637,7 +624,7 @@ export default function TeacherRisksPage() {
                           transition={{ delay: index * 0.05 + 0.6 }}
                           className={`transition-colors ${isExpanded ? "bg-neutral-50/70" : "hover:bg-neutral-50"}`}
                       >
-                        {/* Card Header — clickable to open modal */}
+
                         <div
                             onClick={() => setSelectedStudent(student)}
                             className="p-4 cursor-pointer"
@@ -709,7 +696,6 @@ export default function TeacherRisksPage() {
                                   Детали
                                 </button>
 
-                                {/* Expand / Collapse toggle */}
                                 <button
                                     onClick={(e) => toggleExpand(student.id, e)}
                                     className={`ml-auto px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 ${
@@ -738,7 +724,6 @@ export default function TeacherRisksPage() {
                           </div>
                         </div>
 
-                        {/* Expandable Insights */}
                         <AnimatePresence>
                           {isExpanded && <ExpandedInsights student={student} />}
                         </AnimatePresence>
@@ -755,7 +740,6 @@ export default function TeacherRisksPage() {
           </div>
         </motion.div>
 
-        {/* Student Detail Modal */}
         {selectedStudent && (
             <StudentDetailModal
                 student={selectedStudent}

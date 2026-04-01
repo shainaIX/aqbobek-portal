@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// PATCH /api/notifications/:id/read — пометить ОДНО прочитанным
 export async function PATCH(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -11,14 +10,14 @@ export async function PATCH(
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-        return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
+        return NextResponse.json({ error: 'РќРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅ' }, { status: 401 })
     }
 
     const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('id', id)
-        .eq('user_id', user.id) // защита — только своё уведомление
+        .eq('user_id', user.id)
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 })

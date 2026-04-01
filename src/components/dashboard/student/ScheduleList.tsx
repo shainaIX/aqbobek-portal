@@ -19,7 +19,7 @@ interface ScheduleListProps {
 }
 
 export default function ScheduleList({ lessons }: ScheduleListProps) {
-  // Mock данные если не переданы
+
   const defaultLessons: Lesson[] = [
     {
       id: '1',
@@ -110,7 +110,7 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
       transition={{ duration: 0.5 }}
       className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
     >
-      {/* Header */}
+
       <div className="flex items-center justify-between p-5 border-b border-neutral-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-tertiary-400 to-tertiary-600 rounded-lg flex items-center justify-center">
@@ -121,10 +121,10 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
               Расписание
             </h3>
             <p className="text-xs text-neutral-500">
-              {new Date().toLocaleDateString('ru-RU', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long' 
+              {new Date().toLocaleDateString('ru-RU', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
               })}
             </p>
           </div>
@@ -134,7 +134,6 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
         </button>
       </div>
 
-      {/* Lessons List */}
       <div className="divide-y divide-neutral-100">
         {displayLessons.map((lesson, index) => (
           <motion.div
@@ -145,12 +144,11 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
             className={`p-4 transition-all ${getStatusStyles(lesson.status)}`}
           >
             <div className="flex items-start gap-4">
-              {/* Status Icon */}
+
               <div className="flex-shrink-0 mt-1">
                 {getStatusIcon(lesson.status)}
               </div>
 
-              {/* Time */}
               <div className="flex-shrink-0 w-20">
                 <p className={`text-sm font-bold font-headline ${
                   lesson.status === 'current' ? 'text-primary-600' : 'text-neutral-900'
@@ -160,7 +158,6 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
                 <p className="text-xs text-neutral-500">{lesson.endTime}</p>
               </div>
 
-              {/* Subject Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <div className={`w-1 h-4 rounded-full ${lesson.color}`} />
@@ -191,7 +188,6 @@ export default function ScheduleList({ lessons }: ScheduleListProps) {
         ))}
       </div>
 
-      {/* Footer */}
       <div className="p-4 bg-neutral-50 border-t border-neutral-200">
         <div className="flex items-center justify-between text-xs">
           <span className="text-neutral-600">

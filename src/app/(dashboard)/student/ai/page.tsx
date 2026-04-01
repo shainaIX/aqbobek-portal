@@ -29,8 +29,6 @@ import {
 } from "@/lib/ai-learning/groq";
 import type { TrainingCard, AIAnalysisResponse, SubjectSummary } from "@/lib/ai-learning/types";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function priorityLabel(p: TrainingCard["priority"]) {
   return p === "critical"
     ? "Критично"
@@ -64,8 +62,6 @@ function gradeColor(g: number) {
   return "text-red-600 bg-red-100";
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function AIRecommendationsPage() {
   const { user } = useAuth();
 
@@ -81,7 +77,6 @@ export default function AIRecommendationsPage() {
   const [subjectSummaries, setSubjectSummaries] = useState<SubjectSummary[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // Load subject summaries on mount
   useEffect(() => {
     async function loadSummaries() {
       if (!user?.id) return;
@@ -113,7 +108,6 @@ export default function AIRecommendationsPage() {
     0
   );
 
-  // ── Generate cards (local analysis) ────────────────────────────────────────
   async function handleGenerate() {
     if (isAnalyzing || isAILoading) {
       return;
@@ -124,16 +118,14 @@ export default function AIRecommendationsPage() {
     setAiError(null);
 
     try {
-      // Ensure data is loaded from Supabase
+
       await Promise.all([
         fetchSubjects(),
         fetchStudentRecord(studentId),
       ]);
 
-      // Small delay so the loading animation is visible
       await new Promise((r) => setTimeout(r, 600));
 
-      // Generate cards from Supabase data
       const generated = await generateCardsAsync(studentId);
       setCards(generated);
       setHasGenerated(true);
@@ -141,7 +133,7 @@ export default function AIRecommendationsPage() {
       if (generated.length > 0) {
         setIsAILoading(true);
         try {
-          const weakTopics = analyzeStudent(studentId, true); // Use cached data
+          const weakTopics = analyzeStudent(studentId, true);
           const request = buildAIRequest(
             user?.name ?? "Ученик",
             weakTopics,
@@ -165,7 +157,6 @@ export default function AIRecommendationsPage() {
     }
   }
 
-  // ── Filtered cards ──────────────────────────────────────────────────────────
   const filtered = cards.filter((c) => {
     const matchFilter = filter === "all" || c.priority === filter;
     const matchSearch =
@@ -174,14 +165,13 @@ export default function AIRecommendationsPage() {
     return matchFilter && matchSearch;
   });
 
-  // ── Gemini insight for a card ───────────────────────────────────────────────
   function getAIInsight(topicId: string) {
     return aiResponse?.enhancedCards.find((e) => e.topicId === topicId);
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -213,7 +203,6 @@ export default function AIRecommendationsPage() {
         )}
       </motion.div>
 
-      {/* Subject overview (always visible) */}
       {isDataLoaded && subjectSummaries.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {subjectSummaries.filter(s => s.grade > 0).map((s, i) => (
@@ -240,7 +229,6 @@ export default function AIRecommendationsPage() {
         </div>
       )}
 
-      {/* Generate button / loading / Gemini overall insight */}
       {!hasGenerated ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -288,7 +276,7 @@ export default function AIRecommendationsPage() {
         </motion.div>
       ) : (
         <>
-          {/* Stats row */}
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -334,7 +322,6 @@ export default function AIRecommendationsPage() {
             </motion.div>
           </div>
 
-          {/* AI overall insight */}
           <AnimatePresence>
             {isAILoading && (
               <motion.div
@@ -381,7 +368,6 @@ export default function AIRecommendationsPage() {
             )}
           </AnimatePresence>
 
-          {/* Filters */}
           <div className="flex flex-wrap gap-3">
             <div className="flex-1 min-w-[200px] relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -418,7 +404,6 @@ export default function AIRecommendationsPage() {
             </button>
           </div>
 
-          {/* Cards */}
           <div className="space-y-4">
             {filtered.map((card, index) => {
               const insight = getAIInsight(card.topicId);
@@ -437,7 +422,7 @@ export default function AIRecommendationsPage() {
                   className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                 >
                   <div className="p-5">
-                    {/* Header */}
+
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div
@@ -483,7 +468,6 @@ export default function AIRecommendationsPage() {
                       </div>
                     </div>
 
-                    {/* Signals */}
                     {card.signals.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {card.signals.map((sig, i) => (
@@ -497,7 +481,6 @@ export default function AIRecommendationsPage() {
                       </div>
                     )}
 
-                    {/* Subtopics */}
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {card.subtopics.map((st, i) => (
                         <span
@@ -509,7 +492,6 @@ export default function AIRecommendationsPage() {
                       ))}
                     </div>
 
-                    {/* Gemini insight (if available) */}
                     <AnimatePresence>
                       {insight && (
                         <motion.div
@@ -536,7 +518,6 @@ export default function AIRecommendationsPage() {
                       )}
                     </AnimatePresence>
 
-                    {/* Resources row */}
                     <div className="grid grid-cols-3 gap-4 mb-4">
                       <div className="flex items-center gap-2 text-sm text-neutral-600">
                         <PlayCircle className="w-4 h-4 text-red-500" />
@@ -552,7 +533,6 @@ export default function AIRecommendationsPage() {
                       </div>
                     </div>
 
-                    {/* Progress bar */}
                     <div className="mb-4">
                       <div className="flex items-center justify-between text-xs mb-1">
                         <span className="text-neutral-500">Прогресс выполнения</span>
@@ -566,7 +546,6 @@ export default function AIRecommendationsPage() {
                       </div>
                     </div>
 
-                    {/* Footer */}
                     <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
                       <div className="flex items-center gap-4 text-sm text-neutral-500">
                         <span className="flex items-center gap-1">
@@ -585,7 +564,6 @@ export default function AIRecommendationsPage() {
                     </div>
                   </div>
 
-                  {/* Priority accent bar */}
                   <div
                     className={`h-1 ${
                       card.priority === "critical"

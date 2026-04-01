@@ -1,12 +1,4 @@
-/**
- * Prompt Builder – Constructs structured prompts for Groq AI analysis.
- *
- * Sends raw student performance data to Groq and asks it to:
- * 1. Identify weaknesses and priorities
- * 2. Generate learning strategies
- * 3. Suggest resources and timelines
- * 4. Allocate XP rewards
- */
+
 
 import type { AIInputData } from './types';
 

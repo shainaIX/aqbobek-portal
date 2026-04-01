@@ -5,10 +5,9 @@ import type { Message } from '@/types/messaging'
 export function useMessages(conversationId: string) {
     const [messages, setMessages]   = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [hasMore, setHasMore]     = useState(true) // есть ли ещё сообщения выше
+    const [hasMore, setHasMore]     = useState(true)
     const isFetching                = useRef(false)
 
-    // Загрузка свежих сообщений (polling)
     const fetchMessages = useCallback(async () => {
         if (isFetching.current) return
         isFetching.current = true
@@ -26,7 +25,6 @@ export function useMessages(conversationId: string) {
         }
     }, [conversationId])
 
-    // Загрузка старых сообщений — пагинация вверх
     const loadMore = useCallback(async () => {
         if (!hasMore || messages.length === 0) return
 
@@ -41,7 +39,6 @@ export function useMessages(conversationId: string) {
             return
         }
 
-        // Добавляем в начало без дублей
         setMessages(prev => {
             const existingIds = new Set(prev.map(m => m.id))
             const unique      = older.filter((m: Message) => !existingIds.has(m.id))
@@ -51,20 +48,16 @@ export function useMessages(conversationId: string) {
         if (older.length < 30) setHasMore(false)
     }, [conversationId, messages, hasMore])
 
-    // Polling каждые 5 секунд пока открыт чат
     usePolling(fetchMessages, 5000)
 
-    // Пометить прочитанным при открытии
     useCallback(() => {
         fetch(`/api/conversations/${conversationId}/read`, { method: 'POST' })
     }, [conversationId])
 
-    // Отправка с оптимистичным обновлением
     const sendMessage = useCallback(async (content: string) => {
         const trimmed = content.trim()
         if (!trimmed) return
 
-        // Сразу показываем сообщение не дожидаясь сервера
         const optimistic: Message = {
             id:              `pending-${Date.now()}`,
             conversation_id: conversationId,
@@ -87,13 +80,13 @@ export function useMessages(conversationId: string) {
         )
 
         if (res.ok) {
-            // Заменяем оптимистичное на реальное
+
             const real = await res.json()
             setMessages(prev =>
                 prev.map(m => m.id === optimistic.id ? real : m)
             )
         } else {
-            // Убираем оптимистичное если ошибка
+
             setMessages(prev => prev.filter(m => m.id !== optimistic.id))
         }
     }, [conversationId])

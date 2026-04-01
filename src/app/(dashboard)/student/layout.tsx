@@ -43,15 +43,13 @@ export default function StudentLayout({
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Sidebar */}
+
       <Sidebar />
 
-      {/* Main Content Area */}
       <div className="lg:ml-64 transition-all duration-300">
-        {/* Header */}
+
         <Header />
 
-        {/* Page Content */}
         <main className="px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-6">
           <div className="max-w-[1440px] mx-auto">
             {children}

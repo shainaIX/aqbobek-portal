@@ -1,10 +1,10 @@
-// Типы данных
+
 export interface StudentGrade {
     subjectId: string;
     subjectName: string;
-    grade: number; // 1-5
+    grade: number;
     date: Date;
-    weight?: number; // Вес оценки (1.0 = обычная, 2.0 = контрольная)
+    weight?: number;
 }
 
 export interface AttendanceRecord {
@@ -18,7 +18,7 @@ export interface StudentRiskProfile {
     studentName: string;
     classId: string;
     className: string;
-    riskScore: number; // 0-100
+    riskScore: number;
     riskLevel: 'low' | 'medium' | 'high' | 'critical';
     factors: RiskFactor[];
     recommendations: string[];
@@ -27,8 +27,8 @@ export interface StudentRiskProfile {
 
 export interface RiskFactor {
     type: RiskFactorType;
-    score: number; // 0-100
-    weight: number; // 0.0-1.0 (влияние на общий риск)
+    score: number;
+    weight: number;
     description: string;
     trend?: 'improving' | 'stable' | 'declining';
 }
@@ -40,33 +40,29 @@ export type RiskFactorType =
     | 'homework_completion'
     | 'subject_specific';
 
-// Конфигурация порогов (можно вынести в env или базу)
 export const RISK_THRESHOLDS = {
-    // Средняя оценка
+
     gradeAverage: {
-        excellent: 4.5, // Выше - нет риска
-        good: 4.0,      // Выше - низкий риск
-        satisfactory: 3.0, // Выше - средний риск
-        critical: 2.0,  // Ниже - высокий риск
+        excellent: 4.5,
+        good: 4.0,
+        satisfactory: 3.0,
+        critical: 2.0,
     },
 
-    // Изменение оценок (разница между последними и предыдущими)
     gradeTrend: {
-        improvement: 0.3,  // Улучшение на 0.3+ = снижение риска
-        stable: 0.1,       // Изменение < 0.1 = стабильно
-        decline_warning: 0.3,  // Падение на 0.3+ = предупреждение
-        decline_critical: 0.5, // Падение на 0.5+ = критично
+        improvement: 0.3,
+        stable: 0.1,
+        decline_warning: 0.3,
+        decline_critical: 0.5,
     },
 
-    // Посещаемость
     attendance: {
-        excellent: 95,  // Выше - нет риска
-        good: 85,       // Выше - низкий риск
-        warning: 70,    // Выше - средний риск
-        critical: 50,   // Ниже - высокий риск
+        excellent: 95,
+        good: 85,
+        warning: 70,
+        critical: 50,
     },
 
-    // Веса факторов (сумма = 1.0)
     weights: {
         gradeAverage: 0.35,
         gradeTrend: 0.30,
@@ -74,7 +70,6 @@ export const RISK_THRESHOLDS = {
         homeworkCompletion: 0.10,
     },
 
-    // Уровни риска
     levels: {
         low: 25,
         medium: 50,
@@ -83,7 +78,6 @@ export const RISK_THRESHOLDS = {
     },
 };
 
-// Расчёт риска по средней оценке
 export function calculateGradeAverageRisk(averageGrade: number): RiskFactor {
     const { gradeAverage } = RISK_THRESHOLDS;
 
@@ -121,14 +115,12 @@ export function calculateGradeAverageRisk(averageGrade: number): RiskFactor {
     };
 }
 
-// Расчёт риска по динамике оценок
 export function calculateGradeTrendRisk(
     recentGrades: StudentGrade[],
     previousGrades: StudentGrade[]
 ): RiskFactor {
     const { gradeTrend } = RISK_THRESHOLDS;
 
-    // Рассчитываем средние оценки за периоды
     const recentAverage = recentGrades.length > 0
         ? recentGrades.reduce((sum, g) => sum + g.grade, 0) / recentGrades.length
         : 0;
@@ -174,7 +166,6 @@ export function calculateGradeTrendRisk(
     };
 }
 
-// Расчёт риска по посещаемости
 export function calculateAttendanceRisk(attendanceRecords: AttendanceRecord[]): RiskFactor {
     const { attendance } = RISK_THRESHOLDS;
 
@@ -188,7 +179,6 @@ export function calculateAttendanceRisk(attendanceRecords: AttendanceRecord[]): 
         };
     }
 
-    // Рассчитываем процент посещаемости
     const totalLessons = attendanceRecords.length;
     const presentLessons = attendanceRecords.filter(
         r => r.status === 'present' || r.status === 'excused'
@@ -231,7 +221,6 @@ export function calculateAttendanceRisk(attendanceRecords: AttendanceRecord[]): 
     };
 }
 
-// Расчёт риска по выполнению ДЗ
 export function calculateHomeworkRisk(
     completedHomework: number,
     totalHomework: number
@@ -279,7 +268,6 @@ export function calculateHomeworkRisk(
     };
 }
 
-// Расчёт общего риска по предмету
 export function calculateSubjectRisk(grades: StudentGrade[]): RiskFactor {
     if (grades.length === 0) {
         return {
@@ -316,7 +304,6 @@ export function calculateSubjectRisk(grades: StudentGrade[]): RiskFactor {
         trend = 'declining';
     }
 
-    // Дополнительный риск если последняя оценка низкая
     if (latestGrade <= 2) {
         score = Math.min(100, score + 20);
         description += ` (последняя оценка: ${latestGrade})`;
@@ -331,7 +318,6 @@ export function calculateSubjectRisk(grades: StudentGrade[]): RiskFactor {
     };
 }
 
-// Главная функция расчёта общего риска ученика
 export function calculateStudentRisk(params: {
     studentId: string;
     studentName: string;
@@ -345,7 +331,7 @@ export function calculateStudentRisk(params: {
     totalHomework: number;
     subjectGrades: Record<string, StudentGrade[]>;
 }): StudentRiskProfile {
-    // Рассчитываем риски по каждому фактору
+
     const factors: RiskFactor[] = [
         calculateGradeAverageRisk(params.averageGrade),
         calculateGradeTrendRisk(params.recentGrades, params.previousGrades),
@@ -353,7 +339,6 @@ export function calculateStudentRisk(params: {
         calculateHomeworkRisk(params.completedHomework, params.totalHomework),
     ];
 
-    // Добавляем риски по предметам (находим самый проблемный)
     const subjectRisks = Object.entries(params.subjectGrades).map(([, grades]) =>
         calculateSubjectRisk(grades)
     );
@@ -372,13 +357,11 @@ export function calculateStudentRisk(params: {
         });
     }
 
-    // Рассчитываем взвешенный общий риск
     const totalRiskScore = factors.reduce(
         (sum, factor) => sum + (factor.score * factor.weight),
         0
     );
 
-    // Определяем уровень риска
     const { levels } = RISK_THRESHOLDS;
     let riskLevel: StudentRiskProfile['riskLevel'];
 
@@ -392,7 +375,6 @@ export function calculateStudentRisk(params: {
         riskLevel = 'low';
     }
 
-    // Генерируем рекомендации
     const recommendations = generateRecommendations(factors);
 
     return {
@@ -408,7 +390,6 @@ export function calculateStudentRisk(params: {
     };
 }
 
-// Генерация рекомендаций на основе факторов риска
 function generateRecommendations(
     factors: RiskFactor[]
 ): string[] {
@@ -442,6 +423,5 @@ function generateRecommendations(
         }
     }
 
-    // Удаляем дубликаты и ограничиваем количество
     return [...new Set(recommendations)].slice(0, 5);
 }

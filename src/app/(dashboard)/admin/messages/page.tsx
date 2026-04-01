@@ -35,7 +35,7 @@ export default function AdminMessagesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold font-headline text-neutral-900">Сообщения</h1>
@@ -47,7 +47,6 @@ export default function AdminMessagesPage() {
         </button>
       </motion.div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white rounded-xl border border-neutral-200 p-4">
           <p className="text-xs text-neutral-600 mb-1">Всего</p>
@@ -67,7 +66,6 @@ export default function AdminMessagesPage() {
         })}
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex gap-2 border-b border-neutral-200 overflow-x-auto pb-2">
         {[
           { id: "all", label: "Все", count: conversations.length },
@@ -88,10 +86,9 @@ export default function AdminMessagesPage() {
         ))}
       </div>
 
-      {/* Messages Container */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[600px]">
-          {/* List */}
+
           <div className="border-r border-neutral-200">
             <div className="p-4 border-b border-neutral-200">
               <div className="relative">
@@ -132,7 +129,6 @@ export default function AdminMessagesPage() {
             </div>
           </div>
 
-          {/* Chat */}
           <div className="lg:col-span-2 flex flex-col">
             {selected ? (
               <>

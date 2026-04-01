@@ -36,7 +36,7 @@ export default function TeacherReportsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,6 @@ export default function TeacherReportsPage() {
         </button>
       </motion.div>
 
-      {/* AI Generator Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -94,7 +93,6 @@ export default function TeacherReportsPage() {
         </div>
       </motion.div>
 
-      {/* Reports List */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

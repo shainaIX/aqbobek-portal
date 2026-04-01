@@ -19,7 +19,7 @@ export default function GradesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-bold font-headline text-neutral-900">
           Оценки и Успеваемость
@@ -29,10 +29,8 @@ export default function GradesPage() {
         </p>
       </motion.div>
 
-      {/* Subject Progress — pulls from real database */}
       <SubjectProgress studentId={studentId} />
 
-      {/* Recent Grades Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

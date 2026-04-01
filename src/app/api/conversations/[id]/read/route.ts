@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// POST /api/conversations/:id/read — пометить диалог прочитанным
 export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -11,7 +10,7 @@ export async function POST(
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-        return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
+        return NextResponse.json({ error: 'РќРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅ' }, { status: 401 })
     }
 
     const { error } = await supabase

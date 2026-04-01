@@ -47,7 +47,7 @@ export default function TeacherHeader() {
             <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-200">
                 <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
-                        {/* Left: Logo + Mobile Menu */}
+
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -73,7 +73,6 @@ export default function TeacherHeader() {
                             </div>
                         </div>
 
-                        {/* Center: Search (Desktop) */}
                         <div className="hidden lg:flex flex-1 max-w-md mx-8">
                             <motion.div
                                 animate={{ width: isSearchFocused ? 400 : 320 }}
@@ -90,14 +89,12 @@ export default function TeacherHeader() {
                             </motion.div>
                         </div>
 
-                        {/* Right: Actions */}
                         <div className="flex items-center gap-2 sm:gap-4">
-                            {/* Mobile Search */}
+
                             <button className="lg:hidden p-2 hover:bg-neutral-100 rounded-lg">
                                 <Search className="w-5 h-5 text-neutral-700" />
                             </button>
 
-                            {/* Notifications */}
                             <div className="relative">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
@@ -111,7 +108,6 @@ export default function TeacherHeader() {
                   </span>
                                 </motion.button>
 
-                                {/* Notifications Dropdown */}
                                 <AnimatePresence>
                                     {isNotificationsOpen && (
                                         <motion.div
@@ -150,7 +146,6 @@ export default function TeacherHeader() {
                                 </AnimatePresence>
                             </div>
 
-                            {/* Profile */}
                             <div className="relative">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
@@ -164,7 +159,6 @@ export default function TeacherHeader() {
                                     <ChevronDown className="w-4 h-4 text-neutral-600 hidden sm:block" />
                                 </motion.button>
 
-                                {/* Profile Dropdown */}
                                 <AnimatePresence>
                                     {isProfileOpen && (
                                         <motion.div
@@ -207,7 +201,6 @@ export default function TeacherHeader() {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
                 <AnimatePresence>
                     {isMobileMenuOpen && (
                         <motion.div
@@ -254,7 +247,6 @@ export default function TeacherHeader() {
                 </AnimatePresence>
             </header>
 
-            {/* Click outside to close dropdowns */}
             {(isNotificationsOpen || isProfileOpen) && (
                 <div
                     className="fixed inset-0 z-40"

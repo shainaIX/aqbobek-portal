@@ -166,9 +166,7 @@ export async function analyzeWithAI(
         if (data.error) {
           message = data.error;
         }
-      } catch {
-        // Ignore JSON parse failures and use the default message.
-      }
+      } catch {}
 
       throw new Error(message);
     }

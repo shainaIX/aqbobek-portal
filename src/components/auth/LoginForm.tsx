@@ -156,10 +156,10 @@ export default function LoginForm() {
         disabled={isLoading}
         whileHover={{ scale: isLoading ? 1 : 1.01 }}
         whileTap={{ scale: isLoading ? 1 : 0.99 }}
-        className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white 
-                   font-label text-sm font-bold uppercase tracking-wider py-4 rounded-lg 
-                   shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 
-                   transition-all flex items-center justify-center gap-2 group 
+        className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white
+                   font-label text-sm font-bold uppercase tracking-wider py-4 rounded-lg
+                   shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30
+                   transition-all flex items-center justify-center gap-2 group
                    disabled:opacity-70 disabled:cursor-not-allowed"
       >
         {isLoading ? (

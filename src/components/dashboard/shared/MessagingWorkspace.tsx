@@ -245,7 +245,7 @@ function ComposeModal({
                         await onSelectUser(result);
                         onClose();
                       } catch {
-                        // Error state is handled in the parent workspace.
+
                       } finally {
                         setSubmittingId(null);
                       }

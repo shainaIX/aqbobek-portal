@@ -1,12 +1,7 @@
-/**
- * Supabase data layer for AI Learning module.
- * Replaces mock data with real database queries.
- */
+
 
 import { createClient } from '@/lib/supabase/client';
 import type { Subject, Topic, GradeEntry, TopicPerformance, StudentRecord } from './types';
-
-// ─── Types matching Supabase schema ─────────────────────────────────────────
 
 interface SupabaseUser {
   id: string;
@@ -66,8 +61,6 @@ interface SupabaseTrainingCard {
   updated_at: string;
 }
 
-// ─── Color mapping for subjects ─────────────────────────────────────────────
-
 const subjectColors: Record<string, { color: string; gradientFrom: string; gradientTo: string }> = {
   'алгебра': { color: 'bg-primary-500', gradientFrom: 'from-primary-400', gradientTo: 'to-primary-600' },
   'математика': { color: 'bg-primary-500', gradientFrom: 'from-primary-400', gradientTo: 'to-primary-600' },
@@ -87,9 +80,6 @@ function getSubjectColor(name: string): { color: string; gradientFrom: string; g
   return subjectColors[lowerName] || { color: 'bg-neutral-500', gradientFrom: 'from-neutral-400', gradientTo: 'to-neutral-600' };
 }
 
-// ─── ID mapping helpers ─────────────────────────────────────────────────────
-
-/** Generate a string ID from numeric Supabase ID for compatibility */
 function makeSubjectId(subjectId: number): string {
   return `subj_${subjectId}`;
 }
@@ -98,15 +88,11 @@ function makeTopicId(topicId: number): string {
   return `topic_${topicId}`;
 }
 
-/** Extract numeric ID from our string format */
 function extractNumericId(id: string): number {
   const match = id.match(/(?:subj_|topic_)(\d+)/);
   return match ? parseInt(match[1], 10) : parseInt(id, 10);
 }
 
-// ─── Data fetching functions ────────────────────────────────────────────────
-
-/** Fetch all subjects with their topics */
 export async function fetchSubjects(): Promise<Subject[]> {
   const supabase = createClient();
 
@@ -129,7 +115,6 @@ export async function fetchSubjects(): Promise<Subject[]> {
     console.error('Error fetching topics:', topicsError);
   }
 
-  // Group topics by subject
   const topicsBySubject = new Map<number, typeof topicsData>();
   topicsData?.forEach((topic) => {
     const existing = topicsBySubject.get(topic.subject_id) || [];
@@ -156,14 +141,12 @@ export async function fetchSubjects(): Promise<Subject[]> {
   });
 }
 
-/** Fetch a student's performance data from grades table */
 export async function fetchStudentPerformance(studentId: string): Promise<{
   user: SupabaseUser | null;
   topicPerformance: TopicPerformance[];
 } | null> {
   const supabase = createClient();
 
-  // Fetch user info
   const { data: userData } = await supabase
     .from('users')
     .select('*')
@@ -171,12 +154,10 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
     .single();
 
   if (!userData) {
-    // User doesn't exist in public.users table yet
-    // This is OK - they might only exist in auth.users
+
     console.warn('User not found in public.users table:', studentId);
   }
 
-  // Fetch all grades for this student
   const { data: grades, error: gradesError } = await supabase
     .from('grades')
     .select(`
@@ -202,7 +183,6 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
     };
   }
 
-  // Fetch topic info for all grades
   const topicIds = [...new Set(grades.map((g) => g.topic_id))];
   const { data: topics } = await supabase
     .from('topics')
@@ -216,7 +196,6 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
     };
   }
 
-  // Group grades by topic
   const gradesByTopic = new Map<number, typeof grades>();
   grades.forEach((grade) => {
     const existing = gradesByTopic.get(grade.topic_id) || [];
@@ -224,14 +203,12 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
     gradesByTopic.set(grade.topic_id, existing);
   });
 
-  // Build topic performance records
   const topicPerformance: TopicPerformance[] = [];
 
   for (const [topicId, topicGrades] of gradesByTopic) {
     const topic = topics.find((t) => t.id === topicId);
     if (!topic) continue;
 
-    // Convert grades to our GradeEntry format
     const gradeHistory: GradeEntry[] = topicGrades.map((g) => ({
       score: g.score || 0,
       type: g.score && g.score >= 4 ? 'exam' : 'homework',
@@ -240,15 +217,13 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
       label: g.exam_score ? 'Экзамен' : undefined,
     }));
 
-    // Calculate average attendance from all grades for this topic
     const attendanceValues = topicGrades
       .filter((g) => g.attendance_percentage !== null)
       .map((g) => g.attendance_percentage as number);
     const avgAttendance = attendanceValues.length > 0
       ? attendanceValues.reduce((a, b) => a + b, 0) / attendanceValues.length
-      : 85; // Default attendance
+      : 85;
 
-    // Get the latest exam score
     const examScores = topicGrades
       .filter((g) => g.exam_score !== null)
       .map((g) => g.exam_score as number);
@@ -269,7 +244,6 @@ export async function fetchStudentPerformance(studentId: string): Promise<{
   };
 }
 
-/** Fetch training cards for a student */
 export async function fetchTrainingCards(studentId: string): Promise<SupabaseTrainingCard[]> {
   const supabase = createClient();
 
@@ -287,7 +261,6 @@ export async function fetchTrainingCards(studentId: string): Promise<SupabaseTra
   return data || [];
 }
 
-/** Fetch resources for a topic */
 export async function fetchTopicResources(topicId: number) {
   const supabase = createClient();
 
@@ -305,7 +278,6 @@ export async function fetchTopicResources(topicId: number) {
   return data || [];
 }
 
-/** Create or update a training card */
 export async function upsertTrainingCard(card: {
   user_id: string;
   topic_id: number;
@@ -331,7 +303,6 @@ export async function upsertTrainingCard(card: {
   return data;
 }
 
-/** Update training card progress */
 export async function updateTrainingCardProgress(
   cardId: number,
   progress: {

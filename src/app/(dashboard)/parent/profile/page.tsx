@@ -9,7 +9,7 @@ export default function ParentProfilePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -29,17 +29,15 @@ export default function ParentProfilePage() {
         </button>
       </motion.div>
 
-      {/* Profile Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
       >
-        {/* Cover */}
+
         <div className="h-32 bg-gradient-to-r from-tertiary-400 to-tertiary-600" />
-        
-        {/* Avatar & Info */}
+
         <div className="px-6 pb-6">
           <div className="flex items-end -mt-12 mb-4">
             <div className="w-24 h-24 bg-gradient-to-br from-tertiary-400 to-tertiary-600 rounded-2xl border-4 border-white flex items-center justify-center text-white text-3xl font-bold shadow-lg">
@@ -53,7 +51,6 @@ export default function ParentProfilePage() {
             </div>
           </div>
 
-          {/* Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-3 p-4 bg-neutral-50 rounded-lg">
               <Mail className="w-5 h-5 text-neutral-400" />
@@ -87,7 +84,6 @@ export default function ParentProfilePage() {
         </div>
       </motion.div>
 
-      {/* Settings */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

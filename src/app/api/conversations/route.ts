@@ -2,17 +2,14 @@ import { createClient } from '@/lib/supabase/server'
 import { adminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
-// GET /api/conversations — список диалогов текущего пользователя
 export async function GET() {
     const supabase = await createClient()
 
-    // Получаем текущего пользователя
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
         return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
 
-    // Находим все диалоги где участвует пользователь
     const { data: participations, error: partError } = await supabase
         .from('conversation_participants')
         .select('conversation_id, last_read_at')
@@ -28,7 +25,6 @@ export async function GET() {
 
     const conversationIds = participations.map(p => p.conversation_id)
 
-    // Для каждого диалога получаем собеседника и последнее сообщение
     const { data: conversations, error: convError } = await adminClient
         .from('conversations')
         .select(`
@@ -46,7 +42,6 @@ export async function GET() {
         return NextResponse.json({ error: convError.message }, { status: 500 })
     }
 
-    // Собираем ID собеседников из participation данных
     const partnerIdMap = new Map<string, string>()
     for (const conv of conversations ?? []) {
         const partner = conv.conversation_participants.find(
@@ -59,7 +54,6 @@ export async function GET() {
 
     const partnerIds = [...new Set(partnerIdMap.values())]
 
-    // Batch: профили всех собеседников (1 запрос вместо N)
     const { data: profiles } = partnerIds.length
         ? await adminClient
             .from('profiles')
@@ -71,7 +65,6 @@ export async function GET() {
         (profiles ?? []).map(p => [p.id, p])
     )
 
-    // Batch: последние сообщения всех диалогов (1 запрос вместо N)
     const { data: recentMessages } = await adminClient
         .from('messages')
         .select('conversation_id, content, created_at, sender_id')
@@ -85,7 +78,6 @@ export async function GET() {
         }
     }
 
-    // Batch: непрочитанные сообщения — считаем из уже полученных данных
     const lastReadMap = new Map(
         participations.map(p => [p.conversation_id, p.last_read_at ?? '1970-01-01'])
     )
@@ -99,7 +91,6 @@ export async function GET() {
         }
     }
 
-    // Собираем результат
     const enriched = (conversations ?? []).map(conv => {
         const partnerId = partnerIdMap.get(conv.id)
         if (!partnerId) return null
@@ -119,7 +110,6 @@ export async function GET() {
         }
     })
 
-    // Убираем null и сортируем по последнему сообщению
     const result = enriched
         .filter(Boolean)
         .sort((a, b) => {
@@ -142,7 +132,6 @@ export async function GET() {
     return NextResponse.json(result)
 }
 
-// POST /api/conversations — найти существующий или создать новый диалог
 export async function POST(req: Request) {
     const supabase = await createClient()
 
@@ -161,7 +150,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Нельзя отправить сообщение самому себе' }, { status: 400 })
     }
 
-    // Ищем существующий диалог между этими двумя
     const { data: myConvs } = await adminClient
         .from('conversation_participants')
         .select('conversation_id')
@@ -180,7 +168,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ id: shared, existing: true })
     }
 
-    // Создаём новый диалог
     const { data: convRows, error: convError } = await adminClient
         .from('conversations')
         .insert({})
@@ -196,7 +183,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Не удалось создать диалог' }, { status: 500 })
     }
 
-    // Добавляем обоих участников
     const { error: partError } = await adminClient
         .from('conversation_participants')
         .insert([

@@ -99,7 +99,7 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
       transition={{ duration: 0.5, delay: 0.2 }}
       className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
     >
-      {/* Header */}
+
       <div className="flex items-center justify-between p-5 border-b border-neutral-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
@@ -119,7 +119,6 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
         </button>
       </div>
 
-      {/* Subjects List */}
       <div className="p-5 space-y-4">
         {displaySubjects.filter(s => s.grade > 0).map((subject, index) => {
           const Icon = TrendIcon[subject.trend];
@@ -132,7 +131,7 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
               transition={{ duration: 0.3, delay: index * 0.08 }}
               className="group"
             >
-              {/* Subject Header */}
+
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-8 rounded-full ${subject.color}`} />
@@ -158,7 +157,6 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div className="relative h-3 bg-neutral-100 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
@@ -172,7 +170,6 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
         })}
       </div>
 
-      {/* Footer Stats */}
       <div className="p-4 bg-neutral-50 border-t border-neutral-200">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
