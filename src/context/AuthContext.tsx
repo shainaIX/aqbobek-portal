@@ -3,8 +3,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { getProfileById, type UserRole } from "@/lib/supabase/profiles";
 
-export type UserRole = "student" | "teacher" | "parent" | "admin";
+export type { UserRole } from "@/lib/supabase/profiles";
 
 export interface User {
   id: string;
@@ -23,13 +24,6 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-interface ProfileRecord {
-  id: string;
-  name: string | null;
-  role: UserRole | null;
-  avatar_url: string | null;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function getInitials(name: string) {
@@ -42,37 +36,21 @@ function getInitials(name: string) {
     .join("");
 }
 
-function isUserRole(value: unknown): value is UserRole {
-  return (
-    value === "student" ||
-    value === "teacher" ||
-    value === "parent" ||
-    value === "admin"
-  );
-}
-
-function buildUser(session: Session, profile: ProfileRecord | null): User | null {
-  const email = session.user.email;
-  const role = profile?.role;
-
-  if (!email || !isUserRole(role)) {
+function buildUser(
+  session: Session,
+  profile: Awaited<ReturnType<typeof getProfileById>>,
+): User | null {
+  if (!profile.email || !profile.role) {
     return null;
   }
 
-  const fallbackName =
-    typeof session.user.user_metadata?.name === "string"
-      ? session.user.user_metadata.name
-      : email.split("@")[0];
-
-  const name = profile?.name?.trim() || fallbackName;
-
   return {
     id: session.user.id,
-    email,
-    role,
-    name,
-    avatar: getInitials(name),
-    avatarUrl: profile?.avatar_url ?? null,
+    email: profile.email,
+    role: profile.role,
+    name: profile.name,
+    avatar: getInitials(profile.name),
+    avatarUrl: profile.avatarUrl,
   };
 }
 
@@ -87,17 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("id, name, role, avatar_url")
-      .eq("id", session.user.id)
-      .single();
-
-    if (error) {
-      throw new Error("Профиль пользователя не найден или недоступен");
-    }
-
-    const nextUser = buildUser(session, profile as ProfileRecord);
+    const profile = await getProfileById(supabase, session.user);
+    const nextUser = buildUser(session, profile);
 
     if (!nextUser) {
       throw new Error("Роль пользователя не настроена");

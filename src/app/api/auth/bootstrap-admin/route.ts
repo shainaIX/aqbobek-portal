@@ -3,16 +3,13 @@ import { adminClient } from "@/lib/supabase/admin";
 import { createManagedUser } from "@/lib/server/user-management";
 
 async function hasAdminAccount() {
-  const { count, error } = await adminClient
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("role", "admin");
+  const { data, error } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 500 });
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return (count ?? 0) > 0;
+  return (data?.users ?? []).some((user) => user.user_metadata?.role === "admin");
 }
 
 export async function GET() {

@@ -5,6 +5,7 @@ import {
   createManagedUser,
   type ManagedUserRole,
 } from "@/lib/server/user-management";
+import { getProfileById, getRoleFromMetadata } from "@/lib/supabase/profiles";
 
 const allowedRoles = new Set<ManagedUserRole>(["student", "teacher", "parent", "admin"]);
 
@@ -19,13 +20,9 @@ async function requireAdmin() {
     return { error: NextResponse.json({ error: "Не авторизован" }, { status: 401 }) };
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const profile = await getProfileById(supabase, user);
 
-  if (profileError || profile?.role !== "admin") {
+  if (profile.role !== "admin") {
     return { error: NextResponse.json({ error: "Доступ запрещён" }, { status: 403 }) };
   }
 
@@ -48,13 +45,11 @@ export async function GET() {
     return NextResponse.json({ error: authUsersError.message }, { status: 500 });
   }
 
-  if (profilesError) {
+  if (profilesError && !/column .* does not exist/i.test(profilesError.message)) {
     return NextResponse.json({ error: profilesError.message }, { status: 500 });
   }
 
-  const profileMap = new Map(
-    (profiles ?? []).map((profile) => [profile.id, profile]),
-  );
+  const profileMap = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
 
   const result = (authUsers?.users ?? []).map((authUser) => {
     const profile = profileMap.get(authUser.id);
@@ -62,11 +57,7 @@ export async function GET() {
       typeof authUser.user_metadata?.name === "string"
         ? authUser.user_metadata.name
         : authUser.email?.split("@")[0] ?? "Пользователь";
-    const role =
-      (profile?.role ??
-        (typeof authUser.user_metadata?.role === "string"
-          ? authUser.user_metadata.role
-          : null)) as ManagedUserRole | null;
+    const role = (profile?.role ?? getRoleFromMetadata(authUser)) as ManagedUserRole | null;
 
     return {
       id: authUser.id,

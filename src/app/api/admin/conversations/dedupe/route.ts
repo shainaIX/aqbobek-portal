@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
+import { getProfileById } from "@/lib/supabase/profiles";
 
 interface ConversationParticipantRow {
   conversation_id: string;
@@ -23,13 +24,9 @@ async function requireAdmin() {
     return { error: NextResponse.json({ error: "Не авторизован" }, { status: 401 }) };
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const profile = await getProfileById(supabase, user);
 
-  if (profileError || profile?.role !== "admin") {
+  if (profile.role !== "admin") {
     return { error: NextResponse.json({ error: "Доступ запрещён" }, { status: 403 }) };
   }
 

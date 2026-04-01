@@ -1,5 +1,6 @@
 import "server-only";
 import { adminClient } from "@/lib/supabase/admin";
+import { upsertProfile } from "@/lib/supabase/profiles";
 
 export type ManagedUserRole = "student" | "teacher" | "parent" | "admin";
 
@@ -48,14 +49,14 @@ export async function createManagedUser({
 
   const userId = data.user.id;
 
-  const { error: profileError } = await adminClient.from("profiles").upsert({
-    id: userId,
-    name,
-    role,
-    avatar_url: null,
-  });
-
-  if (profileError) {
+  try {
+    await upsertProfile(adminClient, {
+      id: userId,
+      name,
+      email,
+      role,
+    });
+  } catch {
     await adminClient.auth.admin.deleteUser(userId);
     throw new Error("Не удалось создать профиль пользователя");
   }
