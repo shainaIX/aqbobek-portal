@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminClient } from "@/lib/supabase/admin";
+import { upsertProfile } from "@/lib/supabase/profiles";
 
 const allowedRoles = new Set(["student", "parent"]);
 
@@ -66,14 +67,14 @@ export async function POST(req: Request) {
 
     const userId = data.user.id;
 
-    const { error: profileError } = await adminClient.from("profiles").upsert({
-      id: userId,
-      name,
-      role,
-      avatar_url: null,
-    });
-
-    if (profileError) {
+    try {
+      await upsertProfile(adminClient, {
+        id: userId,
+        name,
+        email,
+        role: role as "student" | "parent",
+      });
+    } catch {
       await adminClient.auth.admin.deleteUser(userId);
 
       return NextResponse.json(
