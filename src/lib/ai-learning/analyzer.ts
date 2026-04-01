@@ -14,13 +14,17 @@ const W = {
   examScore: 0.10,
 };
 
-/** Map a raw average grade (1–5) to a risk score (0–100). */
+/** Map a raw average grade (1–5 or 0–100 percentage) to a risk score (0–100). */
 function gradeToRisk(avg: number): number {
-  if (avg >= 4.5) return 0;
-  if (avg >= 4.0) return 15;
-  if (avg >= 3.5) return 35;
-  if (avg >= 3.0) return 60;
-  if (avg >= 2.0) return 80;
+  // Convert percentage (0-100) to 5-point scale (1-5)
+  // Assuming 100% = 5, 80% = 4, 60% = 3, 40% = 2, 20% = 1
+  const gradeOnFiveScale = avg > 5 ? (avg / 100) * 5 : avg;
+
+  if (gradeOnFiveScale >= 4.5) return 0;
+  if (gradeOnFiveScale >= 4.0) return 15;
+  if (gradeOnFiveScale >= 3.5) return 35;
+  if (gradeOnFiveScale >= 3.0) return 60;
+  if (gradeOnFiveScale >= 2.0) return 80;
   return 100;
 }
 
@@ -80,9 +84,12 @@ function buildSignals(
 ): string[] {
   const signals: string[] = [];
 
-  if (avgGrade < 3.0) signals.push(`Средняя оценка: ${avgGrade.toFixed(1)} — критично`);
-  else if (avgGrade < 3.5) signals.push(`Средняя оценка: ${avgGrade.toFixed(1)} — ниже нормы`);
-  else if (avgGrade < 4.0) signals.push(`Средняя оценка: ${avgGrade.toFixed(1)}`);
+  // Convert percentage to 5-point scale for display
+  const gradeOnFiveScale = avgGrade > 5 ? (avgGrade / 100) * 5 : avgGrade;
+
+  if (gradeOnFiveScale < 3.0) signals.push(`Средняя оценка: ${gradeOnFiveScale.toFixed(1)} — критично`);
+  else if (gradeOnFiveScale < 3.5) signals.push(`Средняя оценка: ${gradeOnFiveScale.toFixed(1)} — ниже нормы`);
+  else if (gradeOnFiveScale < 4.0) signals.push(`Средняя оценка: ${gradeOnFiveScale.toFixed(1)}`);
 
   if (trend === 'declining') signals.push('Оценки снижаются в последнее время');
   if (trend === 'improving') signals.push('Прогресс: оценки растут');
@@ -160,6 +167,9 @@ function analyzeStudentSync(studentId: string): WeakTopic[] {
     // Skip topics that are performing well
     if (weaknessScore <= 15) continue;
 
+    // Convert percentage to 5-point scale for avgGrade
+    const avgGradeOnFiveScale = avgGrade > 5 ? (avgGrade / 100) * 5 : avgGrade;
+
     weakTopics.push({
       subjectId: subject.id,
       subjectName: subject.name,
@@ -168,9 +178,9 @@ function analyzeStudentSync(studentId: string): WeakTopic[] {
       topicName: topic.name,
       subtopics: topic.subtopics,
       weaknessScore,
-      signals: buildSignals(avgGrade, tp.attendanceRate, tp.lastExamScore, trend),
+      signals: buildSignals(avgGradeOnFiveScale, tp.attendanceRate, tp.lastExamScore, trend),
       priority: scoreToPriority(weaknessScore),
-      avgGrade,
+      avgGrade: avgGradeOnFiveScale,
       attendanceRate: tp.attendanceRate,
       lastExamScore: tp.lastExamScore,
       gradeTrend: trend,

@@ -331,7 +331,7 @@ export async function fetchSubjectSummaries(studentId: string): Promise<SubjectS
       name: subject.name,
       color: subject.color,
       grade: Math.round(avgGrade),
-      progress: Math.round((avgGrade / 5) * 100),
+      progress: Math.round(avgGrade),
       trend,
     };
   });
@@ -385,7 +385,7 @@ export function getSubjectSummaries(studentId: string): SubjectSummary[] {
       name: subject.name,
       color: subject.color,
       grade: Math.round(avgGrade),
-      progress: Math.round((avgGrade / 5) * 100),
+      progress: Math.round(avgGrade),
       trend,
     };
   });
@@ -474,4 +474,26 @@ export async function fetchTrainingCards(studentId: string): Promise<Record<stri
   });
 
   return progress;
+}
+
+// ─── AI Analysis input data ─────────────────────────────────────────────────
+
+/** Aggregate all student data into AIInputData format for Groq analysis */
+export async function fetchRawPerformanceData(studentId: string): Promise<import('./types').AIInputData | null> {
+  const [subjects, record, recentGrades] = await Promise.all([
+    fetchSubjects(),
+    fetchStudentRecord(studentId),
+    fetchRecentGrades(studentId, 50),
+  ]);
+
+  if (!record) {
+    return null;
+  }
+
+  return {
+    studentName: record.name,
+    subjects,
+    topicPerformances: record.topicPerformance,
+    recentGrades,
+  };
 }

@@ -225,7 +225,7 @@ export default function AIRecommendationsPage() {
               className="bg-white rounded-xl border border-neutral-200 p-4 text-center"
             >
               <div
-                className={`w-8 h-8 rounded-lg mx-auto mb-2 ${s.color} flex items-center justify-center`}
+                className={`w-8 h-8 rounded-lg mx-auto mb-2 ${s.color || 'bg-gray-400'} flex items-center justify-center`}
               >
                 <span className="text-white text-xs font-bold">{s.name[0]}</span>
               </div>

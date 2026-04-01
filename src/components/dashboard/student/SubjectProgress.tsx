@@ -30,7 +30,7 @@ export default function SubjectProgress({ subjects, studentId }: SubjectProgress
 
     async function loadData() {
       try {
-        const summaries = await fetchSubjectSummaries(effectiveStudentId);
+        const summaries = await fetchSubjectSummaries(effectiveStudentId as string);
         setDisplaySubjects(summaries);
       } catch (error) {
         console.error('Error loading subject summaries:', error);

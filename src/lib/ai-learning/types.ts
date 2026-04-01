@@ -44,60 +44,14 @@ export interface StudentRecord {
   trainingProgress: Record<string, number>; // topicId → 0–100
 }
 
-// ─── Analysis output ──────────────────────────────────────────────────────────
+// ─── Recent grade row (for grades table) ─────────────────────────────────────
 
-export interface WeakTopic {
-  subjectId: string;
-  subjectName: string;
-  subjectColor: string;
-  topicId: string;
-  topicName: string;
-  subtopics: string[];
-  weaknessScore: number; // 0–100
-  signals: string[];
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  avgGrade: number;
-  attendanceRate: number;
-  lastExamScore: number | null;
-  gradeTrend: 'improving' | 'stable' | 'declining';
-}
-
-// ─── Resources ────────────────────────────────────────────────────────────────
-
-export type ResourceType = 'video' | 'theory' | 'practice';
-
-export interface Resource {
-  type: ResourceType;
-  title: string;
-  url: string;
-  duration?: string;
-}
-
-// ─── Training card ────────────────────────────────────────────────────────────
-
-export interface TrainingCard {
-  id: string;
-  subjectId: string;
+export interface RecentGradeRow {
   subject: string;
-  subjectColor: string;
-  gradientFrom: string;
-  gradientTo: string;
-  topicId: string;
   topic: string;
-  subtopics: string[];
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  weaknessScore: number;
-  signals: string[];
-  resources: Resource[];
-  estimatedMinutes: number;
-  xp: number;
-  progress: number;
-  deadline: string;
-  avgGrade: number;
-  gradeTrend: 'improving' | 'stable' | 'declining';
-  // Filled in by AI after API call
-  aiInsight?: string;
-  suggestedApproach?: string;
+  date: string; // formatted DD.MM.YYYY
+  grade: number;
+  type: GradeType;
 }
 
 // ─── SubjectProgress-compatible summary ───────────────────────────────────────
@@ -111,32 +65,68 @@ export interface SubjectSummary {
   color: string;
 }
 
-// ─── Recent grade row (for grades table) ─────────────────────────────────────
+// ─── AI-first architecture: input data ─────────────────────────────────────────
 
-export interface RecentGradeRow {
-  subject: string;
-  topic: string;
-  date: string; // formatted DD.MM.YYYY
-  grade: number;
-  type: GradeType;
-}
-
-// ─── AI Analysis API ─────────────────────────────────────────────────────────
-
-export interface AIAnalysisRequest {
+export interface AIInputData {
   studentName: string;
-  weakTopics: WeakTopic[];
-  subjectSummaries: SubjectSummary[];
+  subjects: Subject[];
+  topicPerformances: TopicPerformance[];
+  recentGrades: RecentGradeRow[];
 }
 
-export interface AIEnhancedCard {
+// ─── AI-generated resources ────────────────────────────────────────────────────
+
+export type ResourceType = 'video' | 'theory' | 'practice';
+
+export interface AIResource {
+  type: ResourceType;
+  title: string;
+  searchQuery: string; // Search query instead of hardcoded URL
+  platform?: 'youtube' | 'khan-academy' | 'wikipedia';
+}
+
+// ─── AI-generated training card ────────────────────────────────────────────────
+
+export interface AITrainingCard {
+  id: string;
+  subjectId: string;
+  subject: string;
+  subjectColor: string;
+  gradientFrom: string;
+  gradientTo: string;
   topicId: string;
-  aiInsight: string;
-  suggestedApproach: string;
-  estimatedDays: number;
+  topic: string;
+  subtopics: string[];
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  weaknessScore: number; // 0–100, AI-determined
+  signals: string[]; // AI-generated improvement signals
+  resources: AIResource[];
+  estimatedMinutes: number; // AI-estimated
+  xp: number; // AI-allocated XP
+  deadline: string; // ISO date, AI-determined
+  avgGrade: number; // From performance data
+  gradeTrend: 'improving' | 'stable' | 'declining';
+  aiInsight: string; // AI-generated insight
+  suggestedApproach: string; // AI-suggested learning approach
 }
 
-export interface AIAnalysisResponse {
-  enhancedCards: AIEnhancedCard[];
+// ─── AI analysis result (from Groq) ───────────────────────────────────────────
+
+export interface AIAnalysisResult {
+  studentId: string;
+  studentName: string;
+  trainingCards: AITrainingCard[];
   overallInsight: string;
+  analysisTimestamp: string; // ISO date
+}
+
+// ─── Cached analysis with invalidation ──────────────────────────────────────────
+
+export interface CachedAnalysis {
+  id: string; // UUID
+  studentId: string;
+  analysis: AIAnalysisResult;
+  gradesHash: string; // SHA256 of student's grades, for invalidation
+  createdAt: string; // ISO date
+  expiresAt: string; // ISO date (24h from creation)
 }
